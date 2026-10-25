@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Maya — Petualangan Persamaan Akuntansi | SMK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050a1c; --panel:rgba(16,26,64,.62); --panel2:rgba(10,18,48,.85);
+  --line:rgba(97,140,255,.28); --blue:#3d7bff; --blue2:#6aa8ff; --cyan:#37c6ff;
+  --yellow:#ffd23f; --yellow2:#ffb703; --ink:#eaf1ff; --muted:#9fb3e6;
+  --ok:#3ddc84; --bad:#ff5d73;
+  --font-head:'Orbitron','Segoe UI',sans-serif; --font-body:'Nunito','Segoe UI',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body); color:var(--ink); background:var(--bg);
+  background-image:
+    radial-gradient(1100px 520px at 85% -10%, rgba(61,123,255,.20), transparent 60%),
+    radial-gradient(900px 480px at -10% 20%, rgba(255,210,63,.10), transparent 55%),
+    radial-gradient(700px 420px at 50% 110%, rgba(55,198,255,.12), transparent 60%);
+  min-height:100vh; overflow-x:hidden;
+}
+#starfield{position:fixed; inset:0; z-index:0; pointer-events:none}
+main{position:relative; z-index:1}
+.container{max-width:1180px;margin:0 auto;padding:26px 20px 70px}
+header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(6,11,32,.82);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1180px;margin:auto;display:flex;align-items:center;gap:14px;padding:10px 20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-weight:900;letter-spacing:.5px;font-size:15px}
+.brand .logo{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:21px;background:linear-gradient(135deg,var(--blue),var(--cyan));box-shadow:0 0 18px rgba(61,123,255,.55)}
+.brand small{display:block;font-size:9.5px;color:var(--muted);font-family:var(--font-body);font-weight:700;letter-spacing:2.5px}
+nav.tabs{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.nav-btn{border:1px solid var(--line);background:rgba(13,22,54,.6);color:var(--muted);padding:9px 14px;border-radius:999px;font:700 13px var(--font-body);cursor:pointer;transition:.25s}
+.nav-btn:hover{color:var(--ink);border-color:var(--blue2);transform:translateY(-1px)}
+.nav-btn.active{background:linear-gradient(135deg,var(--yellow),var(--yellow2));color:#12204d;border-color:transparent;box-shadow:0 4px 18px rgba(255,210,63,.4)}
+.page{display:none}
+.page.active{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.kicker{font:800 11px var(--font-body);letter-spacing:3px;color:var(--yellow);text-transform:uppercase}
+.sec-head{margin-bottom:22px}
+.sec-head h2{font-family:var(--font-head);font-size:clamp(22px,3.4vw,34px);margin:8px 0 8px;text-shadow:0 0 24px rgba(61,123,255,.45)}
+.sec-head p{color:var(--muted);max-width:780px;line-height:1.7}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;backdrop-filter:blur(8px);box-shadow:0 10px 34px rgba(2,6,24,.45)}
+.card-title{font-family:var(--font-head);font-size:17px;margin-bottom:10px;letter-spacing:.4px}
+.muted{color:var(--muted);line-height:1.7}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:rgba(13,22,54,.55);color:var(--ink);border-radius:999px;padding:7px 13px;font:700 12.5px var(--font-body)}
+.chip b{color:var(--yellow)}
+.chips-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.btn{border:none;border-radius:14px;padding:13px 22px;font:800 14px var(--font-body);cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none}
+.btn-yellow{background:linear-gradient(135deg,var(--yellow),var(--yellow2));color:#15224b;box-shadow:0 8px 26px rgba(255,183,3,.35)}
+.btn-blue{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;box-shadow:0 8px 26px rgba(61,123,255,.35)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:center;margin-top:26px}
+.hero h1{font-family:var(--font-head);font-size:clamp(26px,4.6vw,46px);line-height:1.14;margin:10px 0 14px}
+.hero h1 .hl{background:linear-gradient(90deg,var(--yellow),#ffe98a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{color:var(--muted);font-size:16.5px;line-height:1.75}
+.cta-row{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap}
+.hero-visual{position:relative;min-height:330px}
+.planet{position:absolute;border-radius:50%}
+.planet.big{width:230px;height:230px;right:24px;top:18px;background:radial-gradient(circle at 32% 30%, #7fb2ff, #1d3fa8 60%, #101c4d);box-shadow:inset -18px -14px 50px rgba(0,0,0,.55), 0 0 60px rgba(61,123,255,.4)}
+.planet.big::after{content:'';position:absolute;inset:-26px -46px;border:2px solid rgba(255,210,63,.5);border-radius:50%;transform:rotate(-18deg);border-left-color:transparent;border-right-color:transparent}
+.orbit-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--yellow);box-shadow:0 0 12px var(--yellow);left:calc(50% - 5px);top:calc(50% - 5px);animation:orbit 9s linear infinite}
+@keyframes orbit{from{transform:rotate(0) translateX(150px)}to{transform:rotate(360deg) translateX(150px)}}
+.planet.small{width:74px;height:74px;left:34%;top:62%;background:radial-gradient(circle at 35% 30%,#ffe08a,#ff9f1c 65%,#7c4a03);box-shadow:0 0 30px rgba(255,183,3,.4);animation:floaty 5s ease-in-out infinite}
+.rocket{position:absolute;left:4px;bottom:26px;font-size:76px;animation:floaty 4s ease-in-out infinite;filter:drop-shadow(0 12px 24px rgba(255,210,63,.35))}
+.ufo{position:absolute;right:10%;bottom:6%;font-size:36px;animation:floaty 6s ease-in-out infinite reverse}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-16px) rotate(3deg)}}
+.list{margin:10px 0 0 20px;color:var(--muted);line-height:1.9;font-size:14px}
+.list b{color:var(--ink)}
+.hl-y{color:var(--yellow);font-weight:800}
+.hl-b{color:var(--blue2);font-weight:800}
+.note{margin-top:12px;border-left:3px solid var(--cyan);background:rgba(55,198,255,.07);padding:10px 14px;border-radius:10px;font-size:13.5px;color:#bfe9ff;line-height:1.65}
+.eq-hero{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:22px 8px}
+.eq-box{font-family:var(--font-head);font-weight:900;font-size:clamp(15px,2.6vw,25px);padding:18px 26px;border-radius:16px;letter-spacing:1px}
+.eq-aset{background:linear-gradient(135deg,rgba(61,123,255,.25),rgba(61,123,255,.08));border:2px solid var(--blue);box-shadow:0 0 26px rgba(61,123,255,.35);color:#bcd2ff}
+.eq-kew{background:linear-gradient(135deg,rgba(255,210,63,.22),rgba(255,210,63,.06));border:2px solid var(--yellow);box-shadow:0 0 26px rgba(255,210,63,.28);color:#ffe08a}
+.eq-ek{background:linear-gradient(135deg,rgba(55,198,255,.22),rgba(55,198,255,.06));border:2px solid var(--cyan);box-shadow:0 0 26px rgba(55,198,255,.28);color:#b6ecff}
+.eq-op{font-family:var(--font-head);font-size:30px;font-weight:900;color:var(--yellow)}
+.formula{border:2px dashed rgba(255,210,63,.55);background:rgba(255,210,63,.06);border-radius:14px;padding:16px 18px;font-weight:800}
+.formula .fx-name{color:var(--yellow);font-family:var(--font-head);font-size:12px;letter-spacing:1.5px;display:block;margin-bottom:6px}
+.formula .fx-math{font-size:16.5px}
+.unsur{border-radius:16px;padding:18px;border:1px solid var(--line);background:linear-gradient(160deg,rgba(61,123,255,.14),rgba(10,18,48,.4))}
+.unsur h4{font-family:var(--font-head);font-size:15px;margin-bottom:8px}
+.unsur.aset h4{color:var(--blue2)}
+.unsur.kew h4{color:var(--yellow)}
+.unsur.ek h4{color:var(--cyan)}
+.unsur ul{margin:8px 0 0 18px;color:var(--muted);font-size:13.5px;line-height:1.8}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+.tbl th{background:rgba(61,123,255,.18);color:#cfe0ff;padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:12.5px;letter-spacing:.6px}
+.tbl td{padding:10px 12px;border-bottom:1px solid rgba(97,140,255,.14)}
+.tbl tr:hover td{background:rgba(61,123,255,.07)}
+.up{color:var(--ok);font-weight:800}
+.down{color:var(--bad);font-weight:800}
+</style>
+<style>
+.subtabs{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}
+.sub-tab{border:1px solid var(--line);background:rgba(13,22,54,.6);color:var(--muted);padding:11px 18px;border-radius:12px;font:800 13.5px var(--font-body);cursor:pointer;transition:.25s}
+.sub-tab:hover{color:var(--ink)}
+.sub-tab.active{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(61,123,255,.35)}
+.sub-panel{display:none}
+.sub-panel.active{display:block;animation:fadeUp .4s}
+.arena-card{padding:16px}
+.hud{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.hud-chip{border:1px solid var(--line);background:rgba(13,22,54,.6);padding:8px 14px;border-radius:12px;font:700 13px var(--font-body);color:var(--muted)}
+.hud-chip b{color:var(--yellow);font-family:var(--font-head)}
+.hud-spacer{flex:1}
+.mini-toggle{border:1px solid var(--line);background:rgba(13,22,54,.6);color:var(--muted);padding:8px 12px;border-radius:10px;font:700 12px var(--font-body);cursor:pointer;transition:.2s}
+.mini-toggle.on{color:#12204d;background:linear-gradient(135deg,var(--yellow),var(--yellow2));border-color:transparent}
+.arena-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:inset 0 0 60px rgba(0,0,0,.5), 0 0 30px rgba(61,123,255,.18);background:#040820}
+canvas#gameCanvas{display:block;width:100%;height:auto}
+.controls{display:grid;grid-template-columns:1fr 1fr auto;gap:18px;align-items:end;margin-top:16px}
+.ctrl label{display:flex;justify-content:space-between;font:800 13px var(--font-body);color:var(--muted);margin-bottom:8px}
+.ctrl label b{color:var(--yellow);font-family:var(--font-head)}
+input[type=range]{width:100%;accent-color:var(--yellow);height:26px;cursor:pointer}
+.scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);opacity:.8}
+.btn-fire{font-family:var(--font-head);font-size:15px;padding:14px 28px;letter-spacing:1px}
+.range-note{font-size:11.5px;color:var(--cyan);text-align:center;margin-top:6px;font-weight:700}
+.mission-q{margin-top:16px;border:1px solid var(--line);border-left:4px solid var(--yellow);background:rgba(255,210,63,.07);padding:14px 16px;border-radius:12px;font-weight:700;line-height:1.65}
+.q-tag{display:inline-block;font-family:var(--font-head);font-size:11px;font-weight:700;letter-spacing:1px;color:#12204d;background:linear-gradient(135deg,var(--yellow),var(--yellow2));border-radius:8px;padding:4px 10px;margin-right:10px}
+.feedback{margin-top:12px}
+.fb{border-radius:12px;padding:14px 16px;line-height:1.7;animation:fadeUp .4s}
+.fb h4{font-family:var(--font-head);margin-bottom:6px;font-size:15px}
+.fb-ok{background:rgba(61,220,132,.1);border:1px solid rgba(61,220,132,.5)}
+.fb-ok h4{color:var(--ok)}
+.fb-bad{background:rgba(255,93,115,.1);border:1px solid rgba(255,93,115,.5)}
+.fb-bad h4{color:var(--bad)}
+.fb-miss{background:rgba(61,123,255,.1);border:1px solid var(--line)}
+.fb-miss h4{color:var(--blue2)}
+.fb-next{margin-top:12px}
+.final{text-align:center;padding:24px;border:2px solid rgba(255,210,63,.5);border-radius:16px;background:rgba(255,210,63,.06);animation:fadeUp .5s}
+.final h3{font-family:var(--font-head);font-size:20px}
+.stars{font-size:34px;letter-spacing:6px;margin:8px 0}
+.sim-eq{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:stretch;margin-top:16px}
+.sim-col{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--panel2);text-align:center}
+.sim-col h4{font-family:var(--font-head);letter-spacing:1px;font-size:13.5px;margin-bottom:8px}
+.sim-col.aset{border-color:rgba(61,123,255,.6);box-shadow:0 0 22px rgba(61,123,255,.2)}
+.sim-col.aset h4{color:var(--blue2)}
+.sim-col.kew{border-color:rgba(255,210,63,.6);box-shadow:0 0 22px rgba(255,210,63,.16)}
+.sim-col.kew h4{color:var(--yellow)}
+.sim-col.ek{border-color:rgba(55,198,255,.55);box-shadow:0 0 22px rgba(55,198,255,.14)}
+.sim-col.ek h4{color:var(--cyan)}
+.sim-total{font-family:var(--font-head);font-weight:900;font-size:clamp(14px,1.8vw,20px);margin-bottom:10px}
+.bar{height:14px;border-radius:8px;overflow:hidden;display:flex;background:rgba(255,255,255,.06);margin:8px 0 10px}
+.bar .seg{height:100%;transition:width .5s}
+.seg.s-kas{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.seg.s-perl{background:#7c5cff}
+.seg.s-peral{background:#38bdf8}
+.seg.s-utang{background:linear-gradient(90deg,var(--yellow2),var(--yellow))}
+.seg.s-ek{background:linear-gradient(90deg,#22d3ee,#4ade80)}
+.chips{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--muted);text-align:left}
+.chips .row{display:flex;justify-content:space-between;border-bottom:1px dashed rgba(97,140,255,.2);padding-bottom:3px;gap:8px}
+.chips .row b{color:var(--ink)}
+.sim-eq-sign{align-self:center;font-family:var(--font-head);font-size:34px;font-weight:900;color:var(--yellow)}
+.bal-line{margin-top:14px;text-align:center;font-weight:800;color:var(--ok);font-size:14.5px}
+.sim-form{display:grid;grid-template-columns:1.4fr 1fr auto auto;gap:12px;margin-top:16px}
+.sim-form select,.sim-form input{background:rgba(10,18,48,.85);border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:12px 14px;font:700 14px var(--font-body);outline:none;width:100%}
+.sim-form select:focus,.sim-form input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(61,123,255,.18)}
+.log{margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:320px;overflow:auto;padding-right:4px}
+.log-entry{display:flex;gap:12px;border:1px solid rgba(97,140,255,.2);background:rgba(13,22,54,.5);border-radius:12px;padding:11px 14px;animation:fadeUp .35s}
+.log-no{font-family:var(--font-head);font-weight:900;color:var(--yellow);font-size:12px;min-width:36px;height:36px;border:1px solid rgba(255,210,63,.4);border-radius:10px;display:grid;place-items:center}
+.log-fx{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.fx{font-size:11.5px;font-weight:800;padding:4px 9px;border-radius:999px}
+.fx.up{background:rgba(61,220,132,.12);color:var(--ok);border:1px solid rgba(61,220,132,.4)}
+.fx.down{background:rgba(255,93,115,.12);color:var(--bad);border:1px solid rgba(255,93,115,.4)}
+.step{display:flex;gap:14px;padding:14px 0;border-bottom:1px dashed rgba(97,140,255,.2)}
+.step:last-child{border-bottom:none}
+.step-no{min-width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-family:var(--font-head);font-weight:900;background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;box-shadow:0 6px 16px rgba(61,123,255,.35)}
+.step h5{font-size:14.5px;margin-bottom:4px}
+.step p{color:var(--muted);font-size:13.5px;line-height:1.65}
+.tips .tip{display:flex;gap:10px;margin-bottom:11px;font-size:13.5px;color:var(--muted);line-height:1.65}
+.tips .tip span:first-child{font-size:18px}
+.id-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.id-grid label{font:800 12px var(--font-body);color:var(--muted);display:block;margin-bottom:6px;letter-spacing:.5px}
+.id-grid input{width:100%;background:rgba(10,18,48,.85);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:11px 12px;font:700 14px var(--font-body);outline:none}
+.mc{margin:14px 0 22px}
+.mc-q{font-weight:800;margin-bottom:10px;line-height:1.6}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(97,140,255,.22);background:rgba(13,22,54,.45);border-radius:12px;padding:11px 14px;margin-bottom:8px;cursor:pointer;transition:.2s;font-size:14px;line-height:1.5}
+.opt:hover{border-color:var(--blue2)}
+.opt input{accent-color:var(--yellow);margin-top:3px}
+.opt .letter{font-family:var(--font-head);font-weight:900;color:var(--yellow);min-width:20px}
+.opt.correct{border-color:var(--ok);background:rgba(61,220,132,.1)}
+.opt.wrong{border-color:var(--bad);background:rgba(255,93,115,.1)}
+.num{width:100%;background:rgba(10,18,48,.85);border:1px solid var(--line);border-radius:10px;color:var(--ink);padding:11px 12px;font:700 14px var(--font-body);outline:none}
+textarea{width:100%;min-height:88px;background:rgba(10,18,48,.85);border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:12px;font:600 14px var(--font-body);outline:none;resize:vertical}
+.q-item{margin-bottom:14px}
+.q-item label{display:block;font:800 13px var(--font-body);color:var(--muted);margin-bottom:6px}
+.q-item.n-ok .num{border-color:var(--ok);box-shadow:0 0 0 3px rgba(61,220,132,.15)}
+.q-item.n-bad .num{border-color:var(--bad);box-shadow:0 0 0 3px rgba(255,93,115,.15)}
+.key{margin-top:8px;border-left:3px solid var(--yellow);background:rgba(255,210,63,.07);padding:10px 12px;border-radius:8px;font-size:13px;color:#ffe08a;display:none;line-height:1.65}
+.key.show{display:block}
+.result-banner{margin-top:16px;border-radius:16px;padding:18px;text-align:center;font-family:var(--font-head);display:none;animation:fadeUp .4s}
+.result-banner.show{display:block}
+.result-banner .big{font-size:34px;font-weight:900}
+.result-banner.good{background:rgba(61,220,132,.1);border:1px solid rgba(61,220,132,.5);color:var(--ok)}
+.result-banner.mid{background:rgba(255,210,63,.08);border:1px solid rgba(255,210,63,.5);color:var(--yellow)}
+.result-banner.low{background:rgba(255,93,115,.1);border:1px solid rgba(255,93,115,.5);color:var(--bad)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(10,18,48,.95);border:1px solid var(--yellow);color:var(--ink);padding:12px 20px;border-radius:12px;font-weight:800;font-size:13.5px;opacity:0;pointer-events:none;transition:.35s;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{border-top:1px solid var(--line);padding:22px;text-align:center;color:var(--muted);font-size:13px;position:relative;z-index:1;line-height:1.8}
+footer b{color:var(--yellow)}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero-visual{min-height:250px;order:-1}
+  .grid-3,.grid-4{grid-template-columns:1fr 1fr}
+  .controls{grid-template-columns:1fr}
+  .sim-eq{grid-template-columns:1fr}
+  .sim-eq-sign{display:none}
+  .sim-form{grid-template-columns:1fr}
+  .id-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .brand small{display:none}
+}
+@media print{
+  #starfield,header,footer,#toast,.no-print{display:none!important}
+  .page{display:none!important}
+  #lkpd{display:block!important}
+  body{background:#fff!important;color:#111}
+  .card,.opt,.id-grid input,.num,textarea{background:#fff!important;color:#111!important;border:1px solid #888!important;box-shadow:none!important}
+  .muted,.list,.step p{color:#333!important}
+  .kicker,.q-tag{color:#a80!important}
+}
+</style>
+</head>
+<body>
+<canvas id="starfield" aria-hidden="true"></canvas>
+
+<header class="nav no-print">
+  <div class="nav-inner">
+    <div class="brand">
+      <div class="logo">🚀</div>
+      <div>LAB MAYA<small>PERSAMAAN AKUNTANSI</small></div>
+    </div>
+    <nav class="tabs">
+      <button class="nav-btn active" data-target="beranda">🏠 Beranda</button>
+      <button class="nav-btn" data-target="teori">📖 Teori</button>
+      <button class="nav-btn" data-target="simulasi">🎮 Simulasi</button>
+      <button class="nav-btn" data-target="prosedur">🧪 Prosedur</button>
+      <button class="nav-btn" data-target="lkpd">📝 LKPD</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ============================ BERANDA ============================ -->
+<section id="beranda" class="page active">
+  <div class="container">
+    <div class="hero">
+      <div>
+        <span class="kicker">🛰️ Lab Maya Interaktif • SMK Kelas X • Akuntansi</span>
+        <h1>Petualangan <span class="hl">Persamaan Akuntansi</span> di Luar Angkasa</h1>
+        <p class="lead">Kendalikan <b class="hl-y">meriam antariksa</b>: atur sudut dan kecepatan, lalu tembakkan proyektil ke target akun yang tepat! Amati juga bagaimana <b class="hl-b">Aset = Kewajiban + Ekuitas</b> selalu seimbang di Simulator Transaksi. Belajar akuntansi kini seru seperti misi luar angkasa!</p>
+        <div class="cta-row">
+          <button class="btn btn-yellow" data-goto="simulasi">🚀 Mulai Misi</button>
+          <button class="btn btn-ghost" data-goto="teori">📖 Baca Teori Dulu</button>
+        </div>
+        <div class="chips-row">
+          <span class="chip">⏱️ <b>2 × 45</b> menit</span>
+          <span class="chip">🎯 <b>10</b> misi menembak</span>
+          <span class="chip">📊 Simulator transaksi</span>
+          <span class="chip">📝 LKPD penilaian otomatis</span>
+          <span class="chip">📴 Bisa dipakai offline</span>
+        </div>
+      </div>
+      <div class="hero-visual no-print">
+        <div class="planet big"><span class="orbit-dot"></span></div>
+        <div class="planet small"></div>
+        <div class="rocket">🚀</div>
+        <div class="ufo">🛸</div>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top:34px">
+      <div class="card">
+        <h3 class="card-title">🎯 Tujuan Pembelajaran</h3>
+        <ul class="list">
+          <li>Menjelaskan konsep dan <b>rumus persamaan akuntansi</b>.</li>
+          <li>Menganalisis <b>pengaruh transaksi</b> terhadap Aset, Kewajiban, dan Ekuitas.</li>
+          <li>Mengoperasikan simulasi untuk <b>menguji keseimbangan</b> persamaan.</li>
+          <li>Menyimpulkan bahwa setiap transaksi <b>selalu menjaga keseimbangan</b>.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="card-title">🧭 Peta Perjalanan Lab</h3>
+        <ul class="list">
+          <li><b>Stasiun 1 — Teori:</b> rumus &amp; 8 pola transaksi.</li>
+          <li><b>Stasiun 2 — Simulator:</b> catat transaksi, amati persamaan.</li>
+          <li><b>Stasiun 3 — Meriam:</b> 10 misi tembak-tembakan jawaban.</li>
+          <li><b>Stasiun 4 — Prosedur:</b> langkah percobaan resmi.</li>
+          <li><b>Stasiun 5 — LKPD:</b> kerjakan &amp; periksa skor.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="card-title">🌌 Analogi Roket</h3>
+        <p class="muted">Bayangkan roket = perusahaan. <b>Muatan roket</b> (Aset) hanya bisa terbang jika didorong oleh <b>mesin pinjaman</b> (Kewajiban) dan <b>bahan bakar milik pemilik</b> (Ekuitas). Muatan tidak pernah boleh lebih berat dari total dorongan + bahan bakar — itulah sebabnya <span class="hl-y">Aset selalu = Kewajiban + Ekuitas</span>!</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============================ TEORI ============================ -->
+<section id="teori" class="page">
+  <div class="container">
+    <div class="sec-head">
+      <span class="kicker">Stasiun 1 • Landasan Teori</span>
+      <h2>📖 Teori Persamaan Akuntansi</h2>
+      <p>Pelajari rumus dasar, unsur-unsurnya, dan delapan pola perubahan transaksi sebelum berangkat ke arena simulasi.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">🌌 Apa Itu Persamaan Akuntansi?</h3>
+      <p class="muted">Persamaan akuntansi adalah <b>fondasi seluruh pencatatan akuntansi</b>. Persamaan ini menyatakan bahwa seluruh harta yang dimiliki perusahaan (Aset) harus sama dengan sumber pembiayaannya, yaitu dana dari pihak luar (Kewajiban) dan dana dari pemilik (Ekuitas). Persamaan ini menjadi dasar konsep <b>pencatatan ganda (double entry)</b>: setiap transaksi keuangan selalu memengaruhi sekurang-kurangnya dua akun, dengan nilai yang sama besar.</p>
+      <p class="muted" style="margin-top:10px">Karena perubahan di kedua sisi selalu sama besar, persamaan ini <span class="hl-y">tidak pernah lepas dari keseimbangan</span> — di mana pun, kapan pun, termasuk di antariksa! Jika suatu saat jumlah aset tidak sama dengan kewajiban + ekuitas, pasti ada kesalahan pencatatan yang harus dicari.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">🧮 Rumus Dasar &amp; Turunannya</h3>
+      <div class="eq-hero">
+        <div class="eq-box eq-aset">ASET</div>
+        <div class="eq-op">=</div>
+        <div class="eq-box eq-kew">KEWAJIBAN</div>
+        <div class="eq-op">+</div>
+        <div class="eq-box eq-ek">EKUITAS</div>
+      </div>
+      <div class="grid-3" style="margin-top:8px">
+        <div class="formula"><span class="fx-name">MENCARI ASET</span><div class="fx-math">Aset = Kewajiban + Ekuitas</div></div>
+        <div class="formula"><span class="fx-name">MENCARI KEWAJIBAN</span><div class="fx-math">Kewajiban = Aset − Ekuitas</div></div>
+        <div class="formula"><span class="fx-name">MENCARI EKUITAS</span><div class="fx-math">Ekuitas = Aset − Kewajiban</div></div>
+      </div>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="formula"><span class="fx-name">EKUITAS (BENTUK LENGKAP)</span><div class="fx-math">Ekuitas akhir = Modal awal + Laba Bersih − Prive</div></div>
+        <div class="formula"><span class="fx-name">LABA BERSIH</span><div class="fx-math">Laba Bersih = Pendapatan − Beban</div></div>
+      </div>
+      <p class="note">💡 Dalam soal sehari-hari: <b>harta</b> = aset, <b>utang</b> = kewajiban, <b>modal</b> = ekuitas. Ketiga rumus turunan di atas cukup dipindahkan ruasnya seperti persamaan matematika biasa.</p>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:16px">
+      <div class="card unsur aset">
+        <h4>🪐 ASET (Harta)</h4>
+        <p class="muted">Sumber daya yang dimiliki perusahaan dan memberi manfaat ekonomi.</p>
+        <ul>
+          <li><b>Aset lancar:</b> kas, piutang usaha, perlengkapan, persediaan.</li>
+          <li><b>Aset tetap:</b> peralatan, kendaraan, gedung, tanah.</li>
+        </ul>
+      </div>
+      <div class="card unsur kew">
+        <h4>☄️ KEWAJIBAN (Utang)</h4>
+        <p class="muted">Kewajiban perusahaan kepada pihak luar yang harus dibayar.</p>
+        <ul>
+          <li><b>Jangka pendek:</b> utang usaha, utang gaji, utang bank jk. pendek.</li>
+          <li><b>Jangka panjang:</b> utang obligasi, utang bank jk. panjang.</li>
+        </ul>
+      </div>
+      <div class="card unsur ek">
+        <h4>🛰️ EKUITAS (Modal)</h4>
+        <p class="muted">Hak pemilik atas kekayaan perusahaan.</p>
+        <ul>
+          <li><b>Menambah:</b> setoran modal, pendapatan/laba.</li>
+          <li><b>Mengurangi:</b> beban, prive, kerugian.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">🔁 Delapan Pola Perubahan Transaksi</h3>
+      <p class="muted">Sebanyak apapun transaksinya, pengaruhnya selalu mengikuti salah satu dari 8 pola berikut — dan persamaan <b>tidak pernah kalah seimbang</b>.</p>
+      <table class="tbl">
+        <tr><th style="width:50px">No</th><th>Pola Perubahan</th><th>Contoh Transaksi</th></tr>
+        <tr><td>1</td><td><span class="up">Aset ↑</span> &nbsp;dan&nbsp; <span class="down">Aset ↓</span></td><td>Membeli perlengkapan tunai</td></tr>
+        <tr><td>2</td><td><span class="up">Aset ↑</span> &nbsp;dan&nbsp; <span class="up">Kewajiban ↑</span></td><td>Membeli peralatan secara kredit</td></tr>
+        <tr><td>3</td><td><span class="up">Aset ↑</span> &nbsp;dan&nbsp; <span class="up">Ekuitas ↑</span></td><td>Menyetor modal / menerima pendapatan tunai</td></tr>
+        <tr><td>4</td><td><span class="down">Aset ↓</span> &nbsp;dan&nbsp; <span class="down">Kewajiban ↓</span></td><td>Membayar utang dengan kas</td></tr>
+        <tr><td>5</td><td><span class="down">Aset ↓</span> &nbsp;dan&nbsp; <span class="down">Ekuitas ↓</span></td><td>Membayar beban / prive</td></tr>
+        <tr><td>6</td><td><span class="up">Kewajiban ↑</span> &nbsp;dan&nbsp; <span class="down">Ekuitas ↓</span></td><td>Mencatat beban yang masih harus dibayar</td></tr>
+        <tr><td>7</td><td><span class="down">Kewajiban ↓</span> &nbsp;dan&nbsp; <span class="up">Ekuitas ↑</span></td><td>Utang dijadikan setoran modal pemilik</td></tr>
+        <tr><td>8</td><td><span class="up">Kewajiban ↑</span> &nbsp;dan&nbsp; <span class="down">Kewajiban ↓</span></td><td>Utang usaha dibayar dengan wesel tagih</td></tr>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="card-title">🧾 Contoh: PT Andal Elektronik</h3>
+        <p class="muted"><b>1 Jan</b> — Pemilik menyetor modal tunai <b>Rp15.000.000</b>.<br><b>3 Jan</b> — Membeli perlengkapan secara kredit <b>Rp2.000.000</b>.</p>
+        <table class="tbl">
+          <tr><th>Keterangan</th><th>Kas</th><th>Perleng.</th><th>=</th><th>Utang</th><th>+</th><th>Modal</th></tr>
+          <tr><td>Setor modal</td><td>15.000.000</td><td>–</td><td>=</td><td>–</td><td>+</td><td>15.000.000</td></tr>
+          <tr><td>Beli perl. kredit</td><td>–</td><td>2.000.000</td><td>=</td><td>2.000.000</td><td>+</td><td>–</td></tr>
+          <tr><td><b>Saldo</b></td><td><b>15.000.000</b></td><td><b>2.000.000</b></td><td><b>=</b></td><td><b>2.000.000</b></td><td><b>+</b></td><td><b>15.000.000</b></td></tr>
+        </table>
+        <p class="note">Cek keseimbangan: Aset (15jt + 2jt = <b>Rp17.000.000</b>) = Kewajiban (Rp2.000.000) + Ekuitas (Rp15.000.000) → <b>17jt = 17jt ✔</b></p>
+      </div>
+      <div class="card">
+        <h3 class="card-title">🔭 Fisika di Balik Meriam (Bonus)</h3>
+        <p class="muted">Proyektil meriam lab ini bergerak mengikuti lintasan parabola. Perkiraan jarak tembakan:</p>
+        <div class="formula" style="text-align:center;margin-top:10px"><span class="fx-name">JARAK TEMBAKAN</span><div class="fx-math">J = v² × sin(2θ) ÷ g</div></div>
+        <ul class="list">
+          <li><b>v</b> = kecepatan (m/s), <b>θ</b> = sudut tembak, <b>g</b> = 9,8 m/s².</li>
+          <li>Sudut <b class="hl-y">45°</b> memberi jarak <b>paling jauh</b>.</li>
+          <li>Kecepatan dinaikkan <b>2×</b> → jarak menjadi <b>4×</b> lebih jauh.</li>
+          <li>Aktifkan <b>Lintasan: ON</b> di arena untuk melihat prediksi titik jatuh.</li>
+        </ul>
+        <p class="note">🎯 Gunakan fisika ini untuk membantu mengenali target jawaban yang letaknya jauh atau tinggi!</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============================ PROSEDUR ============================ -->
+<section id="prosedur" class="page">
+  <div class="container">
+    <div class="sec-head">
+      <span class="kicker">Stasiun 4 • Prosedur Percobaan</span>
+      <h2>🧪 Langkah-Langkah Percobaan</h2>
+      <p>Ikuti langkah percobaan berikut secara berurutan agar semua konsep persamaan akuntansi benar-benar teruji.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card">
+        <h3 class="card-title">🧰 Alat &amp; Bahan</h3>
+        <div class="chips-row" style="margin-top:6px">
+          <span class="chip">💻 Komputer / HP</span>
+          <span class="chip">🌐 Browser modern</span>
+          <span class="chip">🔢 Kalkulator</span>
+          <span class="chip">📓 Buku catatan</span>
+          <span class="chip">📝 LKPD (tab biru)</span>
+        </div>
+        <h3 class="card-title" style="margin-top:20px">⏱️ Alokasi Waktu</h3>
+        <table class="tbl">
+          <tr><th>Tahap</th><th>Waktu</th></tr>
+          <tr><td>Membaca teori &amp; rumus</td><td>10 menit</td></tr>
+          <tr><td>Simulator transaksi</td><td>20 menit</td></tr>
+          <tr><td>Merium persamaan (10 misi)</td><td>25 menit</td></tr>
+          <tr><td>LKPD &amp; diskusi</td><td>25 menit</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="card-title">🧭 Langkah Percobaan</h3>
+        <div class="step"><div class="step-no">1</div><div><h5>Persiapan &amp; pemahaman teori</h5><p>Buka tab <b>Teori</b>, pahami rumus dasar Aset = Kewajiban + Ekuitas, unsur-unsurnya, dan 8 pola perubahan transaksi.</p></div></div>
+        <div class="step"><div class="step-no">2</div><div><h5>Eksperimen Simulator Transaksi</h5><p>Di tab <b>Simulasi → Simulator Transaksi</b>, catat 5–8 transaksi berbeda. Amati tiga kotak persamaan: jumlahnya tetap sama setiap kali transaksi dicatat!</p></div></div>
+        <div class="step"><div class="step-no">3</div><div><h5>Baca misi meriam</h5><p>Pindah ke <b>Merium Persamaan</b>. Baca soal misi dengan teliti — temukan kata kunci: tunai, kredit, bertambah, berkurang.</p></div></div>
+        <div class="step"><div class="step-no">4</div><div><h5>Atur sudut &amp; kecepatan</h5><p>Gunakan slider <b>Sudut (15°–85°)</b> dan <b>Kecepatan (10–60 m/s)</b>. Perhatikan perkiraan jarak teori di bawah tombol.</p></div></div>
+        <div class="step"><div class="step-no">5</div><div><h5>Tembakkan proyektil!</h5><p>Tekan <b>TEMBAK!</b> (atau tombol spasi). Amati lintasan proyektil hingga mengenai target jawaban yang benar. Boleh mengulang bila meleset.</p></div></div>
+        <div class="step"><div class="step-no">6</div><div><h5>Catat hasil &amp; penjelasan</h5><p>Setiap misi selesai, baca penjelasan efek transaksinya. Catat skor dan akurasi akhirmu.</p></div></div>
+        <div class="step"><div class="step-no">7</div><div><h5>Kerjakan LKPD</h5><p>Buka tab <b>LKPD</b>, isi identitas, jawab semua pertanyaan, lalu klik <b>Periksa Jawaban</b>. Diskusikan soal yang salah bersama teman/guru.</p></div></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card tips">
+        <h3 class="card-title">💡 Tips Astronaut Akuntansi</h3>
+        <div class="tip"><span>🎮</span><span>Kuasai <b>Simulator Transaksi</b> dulu — memahami efek transaksi membuat misi meriam jauh lebih mudah.</span></div>
+        <div class="tip"><span>📐</span><span>Sudut <b>45°</b> menembak paling jauh. Untuk target tinggi, perbesar sudut; untuk target dekat, kecilkan kecepatan.</span></div>
+        <div class="tip"><span>🔍</span><span>Kata <b>kredit</b> = bayar nanti = utang bertambah. Kata <b>tunai</b> = kas ikut berubah.</span></div>
+        <div class="tip"><span>✍️</span><span>Catat setiap perubahan saldo di buku — data ini dibutuhkan untuk menjawab LKPD Kegiatan 2.</span></div>
+      </div>
+      <div class="card">
+        <h3 class="card-title">🎮 Petunjuk Kontrol</h3>
+        <table class="tbl">
+          <tr><th>Kontrol</th><th>Fungsi</th></tr>
+          <tr><td><b>Slider Sudut</b> (15°–85°)</td><td>Menentukan arah/kemiringan tembakan</td></tr>
+          <tr><td><b>Slider Kecepatan</b> (10–60 m/s)</td><td>Menentukan seberapa jauh proyektil terbang</td></tr>
+          <tr><td><b>Tombol TEMBAK!</b> / spasi</td><td>Meluncurkan proyektil dari meriam</td></tr>
+          <tr><td><b>Lintasan: ON/OFF</b></td><td>Menampilkan titik-titik prediksi lintasan</td></tr>
+          <tr><td><b>🔊 Suara</b></td><td>Mengaktifkan/mematikan efek audio</td></tr>
+          <tr><td><b>Mengenai target</b></td><td>Tabrakkan proyektil ke panel jawaban yang benar</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SIMULASI ============================ -->
+<section id="simulasi" class="page">
+  <div class="container">
+    <div class="sec-head">
+      <span class="kicker">Stasiun 2 &amp; 3 • Arena Percobaan</span>
+      <h2>🎮 Simulasi Antariksa</h2>
+      <p>Dua laboratorium dalam satu arena: <b>Merium Persamaan</b> (atur sudut &amp; kecepatan lalu tembak target jawaban) dan <b>Simulator Transaksi</b> (bukti persamaan selalu seimbang).</p>
+    </div>
+
+    <div class="subtabs">
+      <button class="sub-tab active" data-sub="meriam">🔫 Merium Persamaan</button>
+      <button class="sub-tab" data-sub="buku">📊 Simulator Transaksi</button>
+    </div>
+
+    <!-- Panel Meriam -->
+    <div id="panelMeriam" class="sub-panel active">
+      <div class="card arena-card">
+        <div class="hud">
+          <span class="hud-chip">🚀 Misi <b id="hudMission">1/10</b></span>
+          <span class="hud-chip">⭐ Skor <b id="hudScore">0</b></span>
+          <span class="hud-chip">🎯 Akurasi <b id="hudAcc">–</b></span>
+          <span class="hud-spacer"></span>
+          <button class="mini-toggle" id="tgHint">Lintasan: OFF</button>
+          <button class="mini-toggle on" id="tgSound">🔊 Suara</button>
+        </div>
+        <div class="arena-wrap"><canvas id="gameCanvas" width="960" height="540"></canvas></div>
+        <div class="controls">
+          <div class="ctrl">
+            <label>Sudut Tembak <b id="valAngle">45°</b></label>
+            <input type="range" id="sldAngle" min="15" max="85" value="45" step="1" aria-label="Sudut tembak">
+            <div class="scale"><span>15°</span><span>45°</span><span>85°</span></div>
+          </div>
+          <div class="ctrl">
+            <label>Kecepatan Tembak <b id="valSpeed">35 m/s</b></label>
+            <input type="range" id="sldSpeed" min="10" max="60" value="35" step="1" aria-label="Kecepatan tembak">
+            <div class="scale"><span>10</span><span>35</span><span>60</span></div>
+          </div>
+          <div class="ctrl">
+            <button class="btn btn-yellow btn-fire" id="btnFire">🔥 TEMBAK!</button>
+            <div class="range-note" id="valRange">Jarak teori ≈ 125 m</div>
+          </div>
+        </div>
+        <div class="mission-q" id="missionQ"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div class="grid-3" style="margin-top:16px">
+        <div class="card">
+          <h4 class="card-title">🎮 Cara Bermain</h4>
+          <p class="muted">Setiap misi menghadirkan 1 soal dan 4 target panel jawaban melayang. Jatuhkan proyektil <b>tepat di target jawaban yang benar</b>. Tepat sekali coba = <b>+100</b>, coba kedua dst = <b>+50</b>.</p>
+        </div>
+        <div class="card">
+          <h4 class="card-title">🎯 Strategi Menembak</h4>
+          <p class="muted">Target di kanan jauh → sudut ±45° + kecepatan besar. Target dekat → kecepatan kecil. Target tinggi → perbesar sudut. Aktifkan <b>Lintasan</b> untuk bantuan bidik.</p>
+        </div>
+        <div class="card">
+          <h4 class="card-title">🧮 Fisika Singkat</h4>
+          <p class="muted">Jarak ≈ v² × sin(2θ) ÷ g. Sudut 45° = jarak maksimum. Perhatikan arah bergeraknya proyektil, bukan sekadar kekuatan.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Simulator Transaksi -->
+    <div id="panelBuku" class="sub-panel">
+      <div class="card">
+        <h3 class="card-title">📊 Simulator Transaksi — Jaga Keseimbangan!</h3>
+        <p class="muted">Kondisi awal: pemilik menyetor modal tunai <b class="hl-y">Rp20.000.000</b> (saldo Kas Rp20.000.000). Pilih jenis transaksi, tulis nominalnya, lalu tekan <b>Catat</b>. Amati tiga kotak persamaan di bawah — jumlahnya <b class="hl-y">SELALU sama</b>! (Kotak Utang mencakup utang usaha &amp; bank.)</p>
+        <div class="sim-form">
+          <select id="selTx" aria-label="Jenis transaksi">
+            <option value="0">① Menyetor modal tunai</option>
+            <option value="1">② Membeli perlengkapan tunai</option>
+            <option value="2">③ Membeli peralatan secara kredit</option>
+            <option value="3">④ Membayar utang dengan kas</option>
+            <option value="4">⑤ Menerima pendapatan jasa (tunai)</option>
+            <option value="5">⑥ Membayar beban operasional (listrik/gaji)</option>
+            <option value="6">⑦ Prive — pengambilan keperluan pribadi</option>
+            <option value="7">⑧ Meminjam uang di bank</option>
+          </select>
+          <input id="inpNominal" inputmode="numeric" placeholder="Nominal, mis. 5.000.000">
+          <button class="btn btn-blue" id="btnRecord">📝 Catat</button>
+          <button class="btn btn-ghost" id="btnResetSim">🔄 Reset</button>
+        </div>
+
+        <div class="sim-eq">
+          <div class="sim-col aset">
+            <h4>ASET</h4>
+            <div class="sim-total" id="totAset">Rp20.000.000</div>
+            <div class="bar"><div class="seg s-kas" id="segKas" style="width:0"></div><div class="seg s-perl" id="segPerl" style="width:0"></div><div class="seg s-peral" id="segPeral" style="width:0"></div></div>
+            <div class="chips" id="chipsAset"></div>
+          </div>
+          <div class="sim-eq-sign">=</div>
+          <div class="sim-col kew">
+            <h4>KEWAJIBAN</h4>
+            <div class="sim-total" id="totKew">Rp0</div>
+            <div class="bar"><div class="seg s-utang" id="segUtang" style="width:0"></div></div>
+            <div class="chips" id="chipsKew"></div>
+          </div>
+          <div class="sim-eq-sign">+</div>
+          <div class="sim-col ek">
+            <h4>EKUITAS</h4>
+            <div class="sim-total" id="totEk">Rp20.000.000</div>
+            <div class="bar"><div class="seg s-ek" id="segEk" style="width:0"></div></div>
+            <div class="chips" id="chipsEk"></div>
+          </div>
+        </div>
+        <div class="bal-line" id="balLine"></div>
+
+        <h4 style="margin-top:22px;font-family:var(--font-head);font-size:14px">📜 Log Transaksi</h4>
+        <div class="log" id="logJurnal"></div>
+        <p class="note">🧪 Tugas eksperimen: buat transaksi yang (1) menambah Aset &amp; Kewajiban, (2) tidak mengubah total Aset, (3) menambah Aset &amp; Ekuitas. Catat hasilnya untuk LKPD!</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============================ LKPD ============================ -->
+<section id="lkpd" class="page">
+  <div class="container">
+    <div class="sec-head">
+      <span class="kicker">Stasiun 5 • Lembar Kerja Peserta Didik</span>
+      <h2>📝 LKPD Persamaan Akuntansi</h2>
+      <p>Kerjakan setelah menyelesaikan semua stasiun. Klik <b>Periksa Jawaban</b> untuk melihat skor otomatis beserta kunci pembahasan.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">🪪 Identitas Peserta</h3>
+      <div class="id-grid">
+        <div><label>Nama Lengkap</label><input id="idNama" placeholder="Nama kamu"></div>
+        <div><label>Kelas</label><input id="idKelas" placeholder="Contoh: X AKL 1"></div>
+        <div><label>No. Absen</label><input id="idAbsen" placeholder="Contoh: 12"></div>
+        <div><label>Tanggal</label><input id="idTanggal" placeholder="Contoh: 24 Oktober 2026"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">🎯 Tujuan &amp; Petunjuk Pengerjaan</h3>
+      <ul class="list">
+        <li>Kegiatan 1 (PG) dan Kegiatan 2 (isian) dinilai <b>otomatis</b> — total maksimal <b>100</b>.</li>
+        <li>Kegiatan 3 (uraian) muncul kunci pembahasannya untuk ditandingi dengan jawabanmu — penilaian akhir oleh guru.</li>
+        <li>Gunakan data dari <b>Simulator Transaksi</b> dan hasil misi <b>Merium Persamaan</b> untuk membantu menjawab.</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">🚀 Hasil Percobaan Simulasi (isi sendiri)</h3>
+      <div class="grid-2">
+        <div class="q-item"><label>Skor akhir Merium Persamaan</label><input class="num" id="k1score" inputmode="numeric" placeholder="Contoh: 850"></div>
+        <div class="q-item"><label>Jumlah misi yang berhasil ditembak tepat (dari 10)</label><input class="num" id="k1misi" inputmode="numeric" placeholder="Contoh: 8"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">Kegiatan 1 — Pilihan Ganda (5 × 10 = 50 poin)</h3>
+      <div class="mc" id="mc1"></div>
+      <div class="mc" id="mc2"></div>
+      <div class="mc" id="mc3"></div>
+      <div class="mc" id="mc4"></div>
+      <div class="mc" id="mc5"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">Kegiatan 2 — Analisis Transaksi (4 × 12,5 = 50 poin)</h3>
+      <p class="muted">PT Antariksa Jaya memiliki transaksi berikut selama bulan Oktober. Hitung saldo akhirnya, lalu <b>verifikasi dengan Simulator Transaksi</b>!</p>
+      <table class="tbl">
+        <tr><th style="width:90px">Tanggal</th><th>Transaksi</th></tr>
+        <tr><td>1 Okt</td><td>Menyetor modal tunai Rp25.000.000</td></tr>
+        <tr><td>2 Okt</td><td>Membeli peralatan tunai Rp8.000.000</td></tr>
+        <tr><td>5 Okt</td><td>Membeli perlengkapan secara kredit Rp3.000.000</td></tr>
+        <tr><td>8 Okt</td><td>Menerima pendapatan jasa tunai Rp6.000.000</td></tr>
+        <tr><td>12 Okt</td><td>Membayar beban listrik Rp1.200.000</td></tr>
+        <tr><td>15 Okt</td><td>Melunasi utang atas pembelian perlengkapan Rp3.000.000</td></tr>
+      </table>
+      <div class="grid-2" style="margin-top:14px">
+        <div class="q-item"><label>a. Saldo Kas akhir</label><input class="num" id="k2kas" inputmode="numeric" placeholder="Contoh: 1000000"></div>
+        <div class="q-item"><label>b. Total Aset akhir (Kas + Perlengkapan + Peralatan)</label><input class="num" id="k2aset" inputmode="numeric" placeholder="Tulis angka saja"></div>
+        <div class="q-item"><label>c. Saldo Utang Usaha akhir</label><input class="num" id="k2utang" inputmode="numeric" placeholder="Tulis angka saja"></div>
+        <div class="q-item"><label>d. Ekuitas akhir (Modal + Pendapatan − Beban)</label><input class="num" id="k2ek" inputmode="numeric" placeholder="Tulis angka saja"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3 class="card-title">Kegiatan 3 — Uraian &amp; Kesimpulan (dinilai guru)</h3>
+      <div class="q-item">
+        <label>1. Jelaskan dengan kalimatmu sendiri mengapa persamaan akuntansi selalu seimbang setelah setiap transaksi! Berikan satu contoh dari simulasi!</label>
+        <textarea id="k3a" placeholder="Tulis jawabanmu di sini..."></textarea>
+        <div class="key" id="key3a">Kunci: Karena setiap transaksi dicatat ganda (double entry) — perubahan di satu sisi selalu diimbangi perubahan sama besar di sisi lain. Contoh: setoran modal Rp25jt menambah Kas (Aset) dan Modal (Ekuitas) sama besar, sehingga Aset = Kewajiban + Ekuitas tetap terpenuhi.</div>
+      </div>
+      <div class="q-item">
+        <label>2. Sebutkan satu transaksi yang TIDAK mengubah jumlah total aset, dan jelaskan alasannya!</label>
+        <textarea id="k3b" placeholder="Tulis jawabanmu di sini..."></textarea>
+        <div class="key" id="key3b">Kunci: Contoh — membeli perlengkapan tunai: Perlengkapan bertambah dan Kas berkurang dengan nilai sama, keduanya aset, sehingga total aset tidak berubah (pola Aset ↑ Aset ↓).</div>
+      </div>
+      <div class="q-item">
+        <label>3. Tuliskan kesimpulan percobaanmu dari lab maya ini (minimal 2 kalimat)!</label>
+        <textarea id="k3c" placeholder="Tulis kesimpulanmu di sini..."></textarea>
+        <div class="key" id="key3c">Contoh kesimpulan: Setiap transaksi memengaruhi sekurang-kurangnya dua akun dengan nilai sama besar. Jumlah aset selalu sama dengan kewajiban + ekuitas, sehingga persamaan akuntansi merupakan dasar yang menjaga laporan keuangan tetap seimbang dan dapat dipercaya.</div>
+      </div>
+    </div>
+
+    <div class="card no-print">
+      <div class="cta-row" style="margin-top:0">
+        <button class="btn btn-yellow" id="btnCheck">✅ Periksa Jawaban</button>
+        <button class="btn btn-ghost" id="btnResetLkpd">🗑️ Reset</button>
+        <button class="btn btn-ghost" id="btnPrint">🖨️ Cetak LKPD</button>
+      </div>
+      <div class="result-banner" id="lkpdResult"></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <b>Aset = Kewajiban + Ekuitas</b> — selalu seimbang, di Bumi maupun di antariksa. 🌌<br>
+  © 2026 Lab Maya Persamaan Akuntansi • Media pembelajaran interaktif untuk SMK • Satu file HTML, dapat digunakan offline
+</footer>
+
+<div id="toast" role="status"></div>
+
+<script>
+(function(){
+'use strict';
+/* ============================================================
+   UTILITAS DASAR
+============================================================ */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const fmt=n=>'Rp'+new Intl.NumberFormat('id-ID').format(Math.round(n));
+let toastTimer=null;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2800);}
+
+/* ============================================================
+   EFEK SUARA (WebAudio, tanpa file eksternal)
+============================================================ */
+let AC=null, muted=false;
+function ac(){ if(!AC){ try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } return AC; }
+function beep(freq,dur,type,vol,slide){
+  if(muted)return; const a=ac(); if(!a)return;
+  try{
+    const o=a.createOscillator(), g=a.createGain();
+    o.type=type||'square'; o.frequency.setValueAtTime(freq,a.currentTime);
+    if(slide){ o.frequency.exponentialRampToValueAtTime(Math.max(40,freq+slide),a.currentTime+dur); }
+    g.gain.setValueAtTime(vol||0.12,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+dur);
+    o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime+dur);
+  }catch(e){}
+}
+function boomNoise(){
+  if(muted)return; const a=ac(); if(!a)return;
+  try{
+    const dur=0.45, n=Math.floor(a.sampleRate*dur), buf=a.createBuffer(1,n,a.sampleRate), d=buf.getChannelData(0);
+    for(let i=0;i<n;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2); }
+    const s=a.createBufferSource(); s.buffer=buf;
+    const f=a.createBiquadFilter(); f.type='lowpass'; f.frequency.value=850;
+    const g=a.createGain(); g.gain.value=0.35;
+    s.connect(f).connect(g).connect(a.destination); s.start();
+  }catch(e){}
+}
+const sfx={
+  shoot:()=>beep(680,0.18,'square',0.10,-440),
+  boom:()=>boomNoise(),
+  ok:()=>{beep(523,0.12,'sine',0.16,0); setTimeout(()=>beep(784,0.2,'sine',0.16,0),130);},
+  no:()=>beep(150,0.35,'sawtooth',0.13,-70),
+  miss:()=>beep(260,0.25,'sine',0.09,-160),
+  click:()=>beep(880,0.05,'sine',0.07,0)
+};
+
+/* ============================================================
+   NAVIGASI TAB
+============================================================ */
+function showTab(id){
+  $$('.page').forEach(p=>p.classList.toggle('active',p.id===id));
+  $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+$$('.nav-btn').forEach(b=>b.addEventListener('click',()=>{sfx.click();showTab(b.dataset.target);}));
+$$('[data-goto]').forEach(b=>b.addEventListener('click',()=>{sfx.click();showTab(b.dataset.goto);}));
+$$('.sub-tab').forEach(b=>b.addEventListener('click',()=>{
+  sfx.click();
+  $$('.sub-tab').forEach(x=>x.classList.toggle('active',x===b));
+  const key=b.dataset.sub.charAt(0).toUpperCase()+b.dataset.sub.slice(1);
+  $$('.sub-panel').forEach(p=>p.classList.toggle('active',p.id==='panel'+key));
+}));
+
+/* ============================================================
+   LATAR BINTANG (starfield)
+============================================================ */
+const sf=$('#starfield'), sctx=sf.getContext('2d');
+let stars=[], meteors=[], lastMeteor=0;
+function resizeSF(){ sf.width=window.innerWidth; sf.height=window.innerHeight; makeStars(); }
+function makeStars(){
+  stars=Array.from({length:170},()=>({
+    x:Math.random()*sf.width, y:Math.random()*sf.height,
+    r:Math.random()*1.6+0.4, ph:Math.random()*Math.PI*2,
+    sp:Math.random()*0.02+0.006
+  }));
+}
+function sfLoop(t){
+  sctx.clearRect(0,0,sf.width,sf.height);
+  for(const s of stars){
+    s.ph+=s.sp;
+    sctx.globalAlpha=0.3+0.7*Math.abs(Math.sin(s.ph));
+    sctx.fillStyle=s.r>1.35?'#ffd23f':'#cfe0ff';
+    sctx.beginPath(); sctx.arc(s.x,s.y,s.r,0,7); sctx.fill();
+  }
+  sctx.globalAlpha=1;
+  if(t-lastMeteor>3500 && Math.random()<0.02){
+    lastMeteor=t;
+    meteors.push({x:Math.random()*sf.width*0.7+sf.width*0.25, y:Math.random()*sf.height*0.35, vx:-(4+Math.random()*4), vy:2+Math.random()*2, life:1});
+  }
+  meteors=meteors.filter(m=>m.life>0);
+  for(const m of meteors){
+    m.x+=m.vx; m.y+=m.vy; m.life-=0.02;
+    sctx.strokeStyle='rgba(255,210,63,'+Math.max(0,m.life)+')';
+    sctx.lineWidth=2;
+    sctx.beginPath(); sctx.moveTo(m.x,m.y); sctx.lineTo(m.x-m.vx*7,m.y-m.vy*7); sctx.stroke();
+  }
+  requestAnimationFrame(sfLoop);
+}
+window.addEventListener('resize',resizeSF);
+resizeSF();
+requestAnimationFrame(sfLoop);
+
+/* ============================================================
+   DATA MISI MERIAM (10 soal)
+============================================================ */
+const MISSIONS=[
+ {q:'PT Antariksa menyetor modal awal berupa uang tunai Rp50.000.000. Akun yang bertambah pada persamaan akuntansi adalah…',
+  options:['Kas (Aset ↑)','Utang Usaha (Kewajiban ↑)','Beban Gaji (Ekuitas ↓)','Prive (Ekuitas ↓)'],answer:0,
+  explain:'Setoran modal menambah <b>Kas (Aset ↑)</b> dan <b>Modal (Ekuitas ↑)</b> sama besar — persamaan tetap seimbang.',
+  hint:'Uang tunai yang masuk tercatat di akun Kas. Setoran pemilik bukan utang dan bukan beban.'},
+ {q:'Membeli peralatan Rp10.000.000 secara kredit (bayar nanti). Selain Peralatan, akun yang bertambah adalah…',
+  options:['Kas','Utang Usaha','Pendapatan Jasa','Prive'],answer:1,
+  explain:'Pembelian kredit: <b>Peralatan (Aset ↑)</b> dan <b>Utang Usaha (Kewajiban ↑)</b>. Kedua sisi naik sama besar.',
+  hint:'Kata kunci “kredit” artinya bayar nanti = utang. Kas tidak tersentuh.'},
+ {q:'Perusahaan membayar utang usaha Rp2.000.000 dengan kas. Efek transaksi ini adalah…',
+  options:['Kas ↑, Utang Usaha ↑','Kas ↓, Utang Usaha ↓','Peralatan ↑, Modal ↑','Kas ↓, Pendapatan ↑'],answer:1,
+  explain:'Membayar utang mengurangi <b>Kas (Aset ↓)</b> dan menghapus <b>Utang Usaha (Kewajiban ↓)</b> sama besar.',
+  hint:'Membayar utang = dua penurunan: kas keluar dan utang berkurang.'},
+ {q:'Menerima pendapatan jasa perbaikan satelit Rp5.000.000 tunai. Dampaknya pada persamaan…',
+  options:['Kas ↑, Pendapatan/Ekuitas ↑','Kas ↓, Beban ↑','Perlengkapan ↑, Utang ↑','Kas ↑, Utang ↓'],answer:0,
+  explain:'Pendapatan tunai menambah <b>Kas (Aset ↑)</b> dan menambah <b>Ekuitas</b> melalui Pendapatan (↑).',
+  hint:'Uang masuk dari jasa = kas bertambah + pendapatan (penambah ekuitas).'},
+ {q:'Rumus dasar persamaan akuntansi yang benar adalah…',
+  options:['Aset = Kewajiban + Ekuitas','Aset + Kewajiban = Ekuitas','Aset = Kewajiban − Ekuitas','Ekuitas = Aset + Kewajiban'],answer:0,
+  explain:'Persamaan dasar: <b>Aset = Kewajiban + Ekuitas</b>. Semua transaksi wajib menjaga keseimbangan ini.',
+  hint:'Aset selalu di ruas kiri; sumber pembiayaan (utang + modal) di ruas kanan.'},
+ {q:'Aset PT Nyala Rp80.000.000 dan kewajibannya Rp30.000.000. Berapakah ekuitasnya?',
+  options:['Rp110.000.000','Rp30.000.000','Rp50.000.000','Rp80.000.000'],answer:2,
+  explain:'Ekuitas = Aset − Kewajiban = 80 juta − 30 juta = <b>Rp50.000.000</b>.',
+  hint:'Gunakan rumus turunan: Ekuitas = Aset − Kewajiban.'},
+ {q:'Pemilik mengambil kas perusahaan Rp1.000.000 untuk keperluan pribadi (prive). Efeknya…',
+  options:['Kas ↑, Ekuitas ↑','Kas ↓, Ekuitas ↓','Kas ↓, Utang ↓','Kas ↑, Beban ↑'],answer:1,
+  explain:'Prive mengurangi <b>Kas (Aset ↓)</b> dan mengurangi <b>Ekuitas (↓)</b> karena modal pemilik berkurang.',
+  hint:'Prive = pengambilan pribadi → kas keluar dan modal berkurang (bukan beban perusahaan).'},
+ {q:'Membeli perlengkapan Rp1.500.000 secara tunai. Efek pada persamaan akuntansi…',
+  options:['Perlengkapan ↑, Kas ↓ — total aset tetap','Perlengkapan ↑, Utang ↑','Kas ↓, Ekuitas ↓','Perlengkapan ↑, Ekuitas ↑'],answer:0,
+  explain:'Pertukaran antar-aset: <b>Perlengkapan ↑</b> Rp1,5 juta dan <b>Kas ↓</b> Rp1,5 juta — total aset tidak berubah.',
+  hint:'Bayar tunai = menukar aset: satu naik, satu turun, total tetap.'},
+ {q:'Aset sebesar Rp120.000.000 dan ekuitas Rp75.000.000. Maka kewajiban = …',
+  options:['Rp195.000.000','Rp45.000.000','Rp75.000.000','Rp120.000.000'],answer:1,
+  explain:'Kewajiban = Aset − Ekuitas = 120 juta − 75 juta = <b>Rp45.000.000</b>.',
+  hint:'Pindahkan ruas: Kewajiban = Aset − Ekuitas.'},
+ {q:'Transaksi yang menyebabkan Aset bertambah DAN Kewajiban bertambah sekaligus adalah…',
+  options:['Menyetor modal tunai','Membayar utang dengan kas','Membeli gedung secara kredit','Menerima pendapatan jasa tunai'],answer:2,
+  explain:'Membeli gedung kredit: <b>Gedung (Aset ↑)</b> dan <b>Utang (Kewajiban ↑)</b> sama besar.',
+  hint:'Cari transaksi dengan dua kenaikan: aset masuk tetapi dibayar nanti (kredit).'}
+];
+
+/* ============================================================
+   MESIN GAME MERIAM
+============================================================ */
+const cv=$('#gameCanvas'), cx=cv.getContext('2d'), W=cv.width, H=cv.height;
+const G={angle:45,speed:35,proj:null,flying:false,targets:[],parts:[],trail:[],mission:0,score:0,shots:0,hits:0,missionShots:0,solved:false,hint:false,t:0};
+const SLOTS=[[250,58],[520,48],[756,120],[300,180],[586,150],[816,236],[420,300],[700,322],[248,330]];
+const STARS=Array.from({length:70},()=>({x:Math.random()*W,y:Math.random()*(H-60),r:Math.random()*1.5+0.4,a:Math.random()*0.6+0.2,ph:Math.random()*6.28,tw:Math.random()*1.6+0.5,c:Math.random()<0.12?'#ffd23f':(Math.random()<0.5?'#9cc3ff':'#ffffff')}));
+
+function roundRect(x,y,w,h,r){
+  cx.beginPath();
+  if(cx.roundRect){cx.roundRect(x,y,w,h,r);return;}
+  cx.moveTo(x+r,y); cx.lineTo(x+w-r,y); cx.quadraticCurveTo(x+w,y,x+w,y+r);
+  cx.lineTo(x+w,y+h-r); cx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  cx.lineTo(x+r,y+h); cx.quadraticCurveTo(x,y+h,x,y+h-r);
+  cx.lineTo(x,y+r); cx.quadraticCurveTo(x,y,x+r,y);
+}
+function wrapText(text,maxW){
+  const words=text.split(' '), lines=[]; let cur='';
+  words.forEach(wd=>{
+    const test=cur?cur+' '+wd:wd;
+    if(cx.measureText(test).width>maxW && cur){lines.push(cur);cur=wd;} else cur=test;
+  });
+  if(cur)lines.push(cur);
+  return lines;
+}
+function layoutTargets(){
+  const m=MISSIONS[G.mission];
+  G.targets=[];
+  cx.font='700 12.5px Nunito, sans-serif';
+  const pool=SLOTS.slice();
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const tmp=pool[i];pool[i]=pool[j];pool[j]=tmp;}
+  m.options.forEach((opt,oi)=>{
+    const lines=wrapText(opt,148);
+    const w=178, h=Math.max(64,24+lines.length*17);
+    const pos=pool[oi%pool.length];
+    G.targets.push({x:pos[0],y:pos[1],w:w,h:h,lines:lines,oi:oi,dead:false});
+  });
+}
+function explode(x,y){
+  const cs=['#ffd23f','#ff9f1c','#3d7bff','#ffffff','#37c6ff'];
+  for(let i=0;i<30;i++){
+    const a=Math.random()*Math.PI*2, s=60+Math.random()*220;
+    G.parts.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-60,l:0.8+Math.random()*0.4,c:cs[i%cs.length]});
+  }
+}
+function fire(){
+  if(G.flying||G.solved)return;
+  const a=G.angle*Math.PI/180, v=G.speed*10;
+  G.proj={x:64+Math.cos(a)*58, y:(H-52)-Math.sin(a)*58, vx:v*Math.cos(a), vy:-v*Math.sin(a)};
+  G.flying=true; G.shots++; G.missionShots++;
+  $('#btnFire').disabled=true;
+  $('#feedback').innerHTML='';
+  updHud(); sfx.shoot();
+}
+function resolveHit(t){
+  const m=MISSIONS[G.mission];
+  explode(t.x+t.w/2,t.y+t.h/2);
+  t.dead=true; G.proj=null; G.flying=false; $('#btnFire').disabled=false;
+  sfx.boom();
+  if(t.oi===m.answer){
+    G.solved=true; G.hits++;
+    const pts=G.missionShots===1?100:50;
+    G.score+=pts;
+    const last=G.mission===MISSIONS.length-1;
+    $('#feedback').innerHTML='<div class="fb fb-ok"><h4>✅ TEPAT! +'+pts+' poin</h4><p>'+m.explain+'</p></div>'+
+      '<div class="fb-next"><button class="btn btn-blue" id="btnNextM">'+(last?'🏆 Lihat Hasil Akhir':'➜ Misi Berikutnya')+'</button></div>';
+    $('#btnNextM').addEventListener('click',()=>{sfx.click();nextMission();});
+    sfx.ok();
+  }else{
+    $('#feedback').innerHTML='<div class="fb fb-bad"><h4>💥 Target Salah!</h4><p>'+m.hint+'</p><p style="margin-top:6px;color:var(--muted);font-size:13px">Hitung ulang sudut &amp; kecepatan, lalu tembak target yang benar.</p></div>';
+    sfx.no();
+  }
+  updHud();
+}
+function resolveMiss(){
+  G.proj=null; G.flying=false; $('#btnFire').disabled=false;
+  $('#feedback').innerHTML='<div class="fb fb-miss"><h4>🌀 Meleset keluar arena!</h4><p>Proyektil melayang tanpa mengenai target. Tips: sudut <b>45°</b> memberi jarak terjauh, dan kecepatan lebih besar membuat proyektil terbang lebih jauh. Coba lagi!</p></div>';
+  sfx.miss();
+}
+function nextMission(){
+  if(G.mission>=MISSIONS.length-1){finalShow();return;}
+  G.mission++; G.missionShots=0; G.solved=false; G.trail=[];
+  layoutTargets(); renderMission();
+  $('#feedback').innerHTML='';
+  updHud();
+}
+function finalShow(){
+  const acc=G.shots?Math.round(G.hits/G.shots*100):0;
+  const st=G.score>=800?'⭐⭐⭐':(G.score>=600?'⭐⭐':'⭐');
+  $('#feedback').innerHTML='<div class="final"><h3>🏁 SEMUA MISI SELESAI!</h3><div class="stars">'+st+'</div>'+
+    '<p>Skor akhir: <b style="color:var(--yellow);font-size:22px">'+G.score+'</b> • Tembakan tepat: '+G.hits+'/'+G.shots+' (akurasi '+acc+'%)</p>'+
+    '<p style="margin:10px 0;color:var(--muted)">Catat skor ini di LKPD, lalu lanjutkan ke bagian analisis!</p>'+
+    '<button class="btn btn-yellow" id="btnRestart">🔄 Ulangi Simulasi</button></div>';
+  $('#btnRestart').addEventListener('click',()=>{sfx.click();resetGame();});
+  sfx.ok();
+}
+function resetGame(){
+  G.mission=0;G.score=0;G.shots=0;G.hits=0;G.missionShots=0;G.solved=false;G.trail=[];G.parts=[];G.flying=false;G.proj=null;
+  $('#btnFire').disabled=false;
+  layoutTargets(); renderMission();
+  $('#feedback').innerHTML='';
+  updHud();
+}
+function renderMission(){
+  const m=MISSIONS[G.mission];
+  $('#missionQ').innerHTML='<span class="q-tag">🛸 MISI '+(G.mission+1)+'/'+MISSIONS.length+'</span>'+m.q;
+}
+function updHud(){
+  $('#hudMission').textContent=(G.mission+1)+'/'+MISSIONS.length;
+  $('#hudScore').textContent=G.score;
+  $('#hudAcc').textContent=G.shots?Math.round(G.hits/G.shots*100)+'%':'–';
+}
+function stepGame(dt){
+  if(G.proj){
+    const p=G.proj;
+    p.vy+=380*dt; p.x+=p.vx*dt; p.y+=p.vy*dt;
+    G.trail.push({x:p.x,y:p.y,l:1});
+    for(const t of G.targets){
+      if(t.dead)continue;
+      const bob=Math.sin(G.t*1.6+t.x*0.02)*4;
+      if(p.x>t.x-4&&p.x<t.x+t.w+4&&p.y>t.y+bob-4&&p.y>t.y+bob+t.h+4){resolveHit(t);break;}
+    }
+    if(G.proj&&(p.x>W+60||p.x<-60||p.y>H+60))resolveMiss();
+  }
+  G.trail.forEach(tr=>{tr.l-=0.022;});
+  G.trail=G.trail.filter(tr=>tr.l>0);
+  G.parts.forEach(pp=>{pp.x+=pp.vx*dt;pp.y+=pp.vy*dt;pp.vy+=260*dt;pp.l-=0.02;});
+  G.parts=G.parts.filter(pp=>pp.l>0);
+}
+function drawScene(){
+  const g=cx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#071130'); g.addColorStop(0.6,'#0a1a4a'); g.addColorStop(1,'#0d2358');
+  cx.fillStyle=g; cx.fillRect(0,0,W,H);
+  for(const s of STARS){
+    cx.globalAlpha=s.a*(0.6+0.4*Math.sin(G.t*s.tw+s.ph));
+    cx.fillStyle=s.c;
+    cx.beginPath(); cx.arc(s.x,s.y,s.r,0,7); cx.fill();
+  }
+  cx.globalAlpha=1;
+  const px=W-110,py=86,pr=44;
+  const pg=cx.createRadialGradient(px-14,py-14,6,px,py,pr);
+  pg.addColorStop(0,'#9cc3ff'); pg.addColorStop(0.6,'#2b57c4'); pg.addColorStop(1,'#132a6e');
+  cx.fillStyle=pg; cx.beginPath(); cx.arc(px,py,pr,0,7); cx.fill();
+  cx.strokeStyle='rgba(255,210,63,.55)'; cx.lineWidth=2.5;
+  cx.beginPath(); cx.ellipse(px,py,pr+22,(pr+22)*0.32,-0.35,0,7); cx.stroke();
+  cx.fillStyle='#c9d6f5'; cx.beginPath(); cx.arc(150,70,13,0,7); cx.fill();
+  cx.fillStyle='rgba(0,0,0,.15)';
+  cx.beginPath(); cx.arc(146,67,4,0,7); cx.fill();
+  cx.beginPath(); cx.arc(155,74,2.5,0,7); cx.fill();
+  cx.fillStyle='#0b1d52'; cx.fillRect(0,H-34,W,34);
+  cx.strokeStyle='rgba(97,140,255,.3)'; cx.lineWidth=1;
+  for(let gx=30;gx<W;gx+=60){cx.beginPath();cx.moveTo(gx,H-34);cx.lineTo(gx,H);cx.stroke();}
+  cx.strokeStyle='rgba(255,210,63,.35)';
+  cx.beginPath(); cx.moveTo(0,H-34); cx.lineTo(W,H-34); cx.stroke();
+}
+function drawHint(){
+  if(!G.hint)return;
+  const a=G.angle*Math.PI/180, v=G.speed*10;
+  let x=64+Math.cos(a)*58, y=(H-52)-Math.sin(a)*58, vx=v*Math.cos(a), vy=-v*Math.sin(a);
+  const dt=1/60;
+  cx.fillStyle='rgba(55,198,255,.7)';
+  for(let i=0;i<420;i++){
+    vy+=380*dt; x+=vx*dt; y+=vy*dt;
+    if(i%5===0){cx.globalAlpha=0.75;cx.beginPath();cx.arc(x,y,2.2,0,7);cx.fill();}
+    if(y>H-30||x>W||x<0)break;
+  }
+  cx.globalAlpha=1;
+}
+function drawTargets(){
+  cx.font='700 12.5px Nunito, sans-serif';
+  for(const t of G.targets){
+    if(t.dead)continue;
+    const bob=Math.sin(G.t*1.6+t.x*0.02)*4;
+    cx.save();
+    cx.translate(t.x,t.y+bob);
+    cx.shadowColor='rgba(255,210,63,.55)'; cx.shadowBlur=14;
+    cx.fillStyle='rgba(13,25,66,.92)';
+    roundRect(0,0,t.w,t.h,12); cx.fill();
+    cx.shadowBlur=0;
+    cx.strokeStyle='rgba(255,210,63,.85)'; cx.lineWidth=1.6;
+    roundRect(0,0,t.w,t.h,12); cx.stroke();
+    cx.strokeStyle='rgba(61,123,255,.4)'; cx.lineWidth=1;
+    roundRect(3,3,t.w-6,t.h-6,9); cx.stroke();
+    cx.fillStyle='#eaf1ff'; cx.textAlign='center'; cx.textBaseline='middle';
+    const lh=17, total=t.lines.length*lh, y0=(t.h-total)/2+lh/2+2;
+    t.lines.forEach((ln,i)=>cx.fillText(ln,t.w/2,y0+i*lh));
+    cx.font='900 11px Orbitron, sans-serif';
+    cx.fillStyle='#ffd23f';
+    cx.fillText(String.fromCharCode(65+t.oi),t.w-14,12);
+    cx.font='700 12.5px Nunito, sans-serif';
+    cx.restore();
+  }
+}
+function drawCannon(){
+  const bx=64, by=H-52, a=G.angle*Math.PI/180;
+  const a2=G.angle*Math.PI/180;
+  cx.strokeStyle='rgba(255,210,63,.5)'; cx.setLineDash([5,5]); cx.lineWidth=1.5;
+  cx.beginPath();
+  cx.moveTo(64+Math.cos(a2)*66,(H-52)-Math.sin(a2)*66);
+  cx.lineTo(64+Math.cos(a2)*(66+86),(H-52)-Math.sin(a2)*(66+86));
+  cx.stroke();
+  cx.setLineDash([]);
+  cx.fillStyle='#12245c';
+  roundRect(bx-36,H-40,100,30,10); cx.fill();
+  cx.strokeStyle='rgba(97,140,255,.5)'; cx.lineWidth=1.4;
+  roundRect(bx-36,H-40,100,30,10); cx.stroke();
+  cx.save();
+  cx.translate(bx,by); cx.rotate(-a);
+  cx.fillStyle='#3d7bff';
+  roundRect(6,-9,52,18,8); cx.fill();
+  cx.strokeStyle='rgba(255,255,255,.35)'; cx.lineWidth=1.2;
+  roundRect(6,-9,52,18,8); cx.stroke();
+  cx.fillStyle='#ffd23f'; cx.beginPath(); cx.arc(58,0,7,0,7); cx.fill();
+  cx.restore();
+  cx.fillStyle='#ffd23f'; cx.beginPath(); cx.arc(bx,by,20,Math.PI,0); cx.fill();
+  cx.fillStyle='#ffb703'; cx.beginPath(); cx.arc(bx,by,20,Math.PI*1.05,Math.PI*1.45); cx.closePath(); cx.fill();
+  cx.fillStyle='#0a1a4a'; cx.beginPath(); cx.arc(bx,by,7,0,7); cx.fill();
+  cx.strokeStyle='rgba(255,210,63,.5)'; cx.setLineDash([4,4]);
+  cx.beginPath(); cx.arc(bx,by,34,-a,0); cx.stroke();
+  cx.setLineDash([]);
+}
+function draw(){
+  drawScene();
+  drawHint();
+  G.trail.forEach(tr=>{
+    cx.globalAlpha=tr.l*0.7; cx.fillStyle='#ffd23f';
+    cx.beginPath(); cx.arc(tr.x,tr.y,4.5*tr.l+1,0,7); cx.fill();
+  });
+  cx.globalAlpha=1;
+  drawTargets();
+  G.parts.forEach(pp=>{
+    cx.globalAlpha=Math.max(0,pp.l); cx.fillStyle=pp.c;
+    cx.beginPath(); cx.arc(pp.x,pp.y,3*pp.l+1,0,7); cx.fill();
+  });
+  cx.globalAlpha=1;
+  if(G.proj){
+    cx.shadowColor='#ffd23f'; cx.shadowBlur=18;
+    cx.fillStyle='#ffd23f';
+    cx.beginPath(); cx.arc(G.proj.x,G.proj.y,7,0,7); cx.fill();
+    cx.shadowBlur=0;
+    cx.fillStyle='rgba(255,255,255,.85)';
+    cx.beginPath(); cx.arc(G.proj.x-2,G.proj.y-2,2.5,0,7); cx.fill();
+  }
+  drawCannon();
+}
+let lastT=performance.now();
+function loop(now){
+  const dt=Math.min(0.033,(now-lastT)/1000); lastT=now;
+  G.t+=dt;
+  stepGame(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
+function updRange(){
+  const a=G.angle*Math.PI/180;
+  const R=(G.speed*G.speed)*Math.sin(2*a)/9.8;
+  $('#valRange').textContent='Jarak teori ≈ '+R.toFixed(0)+' m';
+}
+$('#sldAngle').addEventListener('input',e=>{G.angle=+e.target.value;$('#valAngle').textContent=G.angle+'°';updRange();});
+$('#sldSpeed').addEventListener('input',e=>{G.speed=+e.target.value;$('#valSpeed').textContent=G.speed+' m/s';updRange();});
+$('#btnFire').addEventListener('click',fire);
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space'&&$('#simulasi').classList.contains('active')){
+    const tag=document.activeElement?document.activeElement.tagName:'';
+    if(!['INPUT','TEXTAREA','SELECT','BUTTON'].includes(tag)){e.preventDefault();fire();}
+  }
+});
+$('#tgHint').addEventListener('click',()=>{
+  G.hint=!G.hint;
+  const b=$('#tgHint');
+  b.classList.toggle('on',G.hint);
+  b.textContent='Lintasan: '+(G.hint?'ON':'OFF');
+  sfx.click();
+});
+$('#tgSound').addEventListener('click',()=>{
+  muted=!muted;
+  const b=$('#tgSound');
+  b.classList.toggle('on',!muted);
+  b.textContent=muted?'🔇 Senyap':'🔊 Suara';
+  if(!muted)sfx.click();
+});
+
+/* ============================================================
+   SIMULATOR TRANSAKSI
+============================================================ */
+const S0={kas:20000000,perl:0,peral:0,utang:0,modal:20000000,pend:0,beban:0,prive:0};
+let S=Object.assign({},S0), LOG=[];
+const TXL=[
+  {label:'Menyetor modal tunai',kind:'modal'},
+  {label:'Membeli perlengkapan tunai',kind:'perlTunai'},
+  {label:'Membeli peralatan secara kredit',kind:'peralKredit'},
+  {label:'Membayar utang dengan kas',kind:'bayarUtang'},
+  {label:'Menerima pendapatan jasa (tunai)',kind:'pendapatan'},
+  {label:'Membayar beban operasional',kind:'beban'},
+  {label:'Prive — pengambilan pribadi',kind:'prive'},
+  {label:'Meminjam uang di bank',kind:'pinjam'}
+];
+function rowHtml(k,v){return '<div class="row"><span>'+k+'</span><b>'+fmt(v)+'</b></div>';}
+function setBar(sel,p){const el=$(sel);el.style.width=Math.min(100,Math.max(0,p))+'%';}
+function renderSim(){
+  const aset=S.kas+S.perl+S.peral, kew=S.utang, ek=S.modal+S.pend-S.beban-S.prive;
+  $('#totAset').textContent=fmt(aset);
+  $('#totKew').textContent=fmt(kew);
+  $('#totEk').textContent=fmt(ek);
+  const pc=(v,t)=>t>0?v/t*100:0;
+  setBar('#segKas',pc(S.kas,aset));
+  setBar('#segPerl',pc(S.perl,aset));
+  setBar('#segPeral',pc(S.peral,aset));
+  const rightT=kew+Math.max(ek,0);
+  setBar('#segUtang',pc(kew,rightT));
+  setBar('#segEk',pc(Math.max(ek,0),rightT));
+  $('#chipsAset').innerHTML=rowHtml('Kas',S.kas)+rowHtml('Perlengkapan',S.perl)+rowHtml('Peralatan',S.peral);
+  $('#chipsKew').innerHTML=rowHtml('Utang (usaha & bank)',S.utang);
+  $('#chipsEk').innerHTML=rowHtml('Modal',S.modal)+rowHtml('Pendapatan',S.pend)+rowHtml('Beban (−)',S.beban)+rowHtml('Prive (−)',S.prive);
+  $('#balLine').textContent='✔ SEIMBANG: Aset '+fmt(aset)+' = Kewajiban '+fmt(kew)+' + Ekuitas '+fmt(ek);
+  $('#logJurnal').innerHTML=LOG.length?LOG.map(e=>
+    '<div class="log-entry"><div class="log-no">#'+e.no+'</div><div><b>'+e.label+'</b> '+
+    '<span style="color:var(--muted);font-size:12px">('+fmt(e.n)+')</span>'+
+    '<div class="log-fx">'+e.fx.map(f=>'<span class="fx '+(f[2]>0?'up':'down')+'">'+f[0]+' '+(f[2]>0?'+':'−')+' '+fmt(f[1])+'</span>').join('')+'</div></div></div>'
+  ).join(''):'<p style="color:var(--muted);font-size:13.5px">Belum ada transaksi. Mulai dari memilih jenis transaksi di atas!</p>';
+}
+function recordTx(){
+  const idx=+$('#selTx').value;
+  const n=parseInt($('#inpNominal').value.replace(/[^\d]/g,''),10)||0;
+  const tx=TXL[idx];
+  if(n<=0){toast('⚠️ Isi nominal transaksi terlebih dahulu!');return;}
+  if(['perlTunai','beban','prive','bayarUtang'].indexOf(tx.kind)>=0 && S.kas<n){
+    toast('❌ Saldo kas tidak cukup! Kas saat ini '+fmt(S.kas));return;
+  }
+  if(tx.kind==='bayarUtang' && S.utang<n){
+    toast('❌ Utang hanya '+fmt(S.utang)+' — nominal terlalu besar!');return;
+  }
+  const fx=[];
+  switch(tx.kind){
+    case 'modal':      S.kas+=n;  S.modal+=n; fx.push(['Kas',n,1],['Modal',n,1]); break;
+    case 'perlTunai':  S.perl+=n; S.kas-=n;   fx.push(['Perlengkapan',n,1],['Kas',n,-1]); break;
+    case 'peralKredit':S.peral+=n;S.utang+=n; fx.push(['Peralatan',n,1],['Utang Usaha',n,1]); break;
+    case 'bayarUtang': S.utang-=n;S.kas-=n;   fx.push(['Utang Usaha',n,-1],['Kas',n,-1]); break;
+    case 'pendapatan': S.kas+=n;  S.pend+=n;  fx.push(['Kas',n,1],['Pendapatan',n,1]); break;
+    case 'beban':      S.kas-=n;  S.beban+=n; fx.push(['Kas',n,-1],['Beban',n,1]); break;
+    case 'prive':      S.kas-=n;  S.prive+=n; fx.push(['Kas',n,-1],['Prive',n,1]); break;
+    case 'pinjam':     S.kas+=n;  S.utang+=n; fx.push(['Kas',n,1],['Utang Bank',n,1]); break;
+  }
+  LOG.unshift({no:LOG.length+1,label:tx.label,fx:fx,n:n});
+  $('#inpNominal').value='';
+  renderSim(); sfx.click();
+  toast('✔ Transaksi tercatat! Persamaan tetap seimbang.');
+}
+$('#btnRecord').addEventListener('click',recordTx);
+$('#inpNominal').addEventListener('input',e=>{
+  const n=e.target.value.replace(/[^\d]/g,'');
+  e.target.value=n?new Intl.NumberFormat('id-ID').format(parseInt(n,10)):'';
+});
+$('#btnResetSim').addEventListener('click',()=>{
+  S=Object.assign({},S0); LOG=[]; renderSim();
+  toast('🔄 Simulator direset ke kondisi awal.');
+});
+
+/* ============================================================
+   LKPD
+============================================================ */
+const MC=[
+ {q:'Persamaan dasar akuntansi yang benar adalah…',
+  opts:['Aset = Kewajiban − Ekuitas','Aset = Kewajiban + Ekuitas','Kewajiban = Aset + Ekuitas','Ekuitas = Aset + Kewajiban'],ans:1},
+ {q:'Setiap transaksi keuangan perusahaan akan…',
+  opts:['selalu menambah jumlah aset','hanya memengaruhi satu akun','memengaruhi sekurang-kurangnya dua akun sehingga persamaan tetap seimbang','selalu mengurangi modal pemilik'],ans:2},
+ {q:'PT Nebula memiliki aset Rp100.000.000 dan kewajiban Rp40.000.000. Ekuitasnya adalah…',
+  opts:['Rp140.000.000','Rp60.000.000','Rp40.000.000','Rp100.000.000'],ans:1},
+ {q:'Membeli mesin produksi secara kredit akan menyebabkan…',
+  opts:['aset bertambah dan kewajiban bertambah','aset bertambah dan ekuitas bertambah','aset berkurang dan kewajiban berkurang','kewajiban bertambah dan ekuitas bertambah'],ans:0},
+ {q:'Pengambilan kas oleh pemilik untuk keperluan pribadi (prive) dicatat sebagai…',
+  opts:['penambah kas dan penambah ekuitas','pengurang kas dan pengurang ekuitas','penambah kewajiban dan pengurang aset','pengurang utang dan penambah modal'],ans:1}
+];
+function buildMC(){
+  MC.forEach((m,i)=>{
+    const box=$('#mc'+(i+1));
+    box.innerHTML='<div class="mc-q">'+(i+1)+'. '+m.q+'</div>'+
+      m.opts.map((o,j)=>'<label class="opt" data-q="'+i+'" data-o="'+j+'">'+
+        '<input type="radio" name="q'+i+'" value="'+j+'">'+
+        '<span class="letter">'+'ABCD'.charAt(j)+'</span><span>'+o+'</span></label>').join('');
+  });
+}
+function checkLKPD(){
+  let score=0;
+  MC.forEach((m,i)=>{
+    const sel=document.querySelector('input[name="q'+i+'"]:checked');
+    const labels=$$('#mc'+(i+1)+' .opt');
+    labels.forEach(l=>l.classList.remove('correct','wrong'));
+    if(sel){
+      const j=+sel.value;
+      labels[m.ans].classList.add('correct');
+      if(j===m.ans){score+=10;} else {labels[j].classList.add('wrong');}
+    }else{
+      labels[m.ans].classList.add('correct');
+    }
+  });
+  const NUM=[['k2kas',21800000],['k2aset',32800000],['k2utang',0],['k2ek',29800000]];
+  NUM.forEach(function(pair){
+    const el=$('#'+pair[0]), exp=pair[1];
+    const v=parseInt(el.value.replace(/[^\d]/g,''),10);
+    const wrap=el.closest('.q-item');
+    wrap.classList.remove('n-ok','n-bad');
+    if(!isNaN(v)&&v===exp){score+=12.5;wrap.classList.add('n-ok');}
+    else{wrap.classList.add('n-bad');}
+  });
+  score=Math.round(score);
+  $$('#lkpd .key').forEach(k=>k.classList.add('show'));
+  let cls,msg;
+  if(score>=85){cls='good';msg='🌟 LUAR BIASA! Kamu astronaut akuntansi sejati!';}
+  else if(score>=70){cls='mid';msg='🚀 BAGUS! Sedikit lagi menuju sempurna.';}
+  else if(score>=50){cls='mid';msg='🛰️ CUKUP BAIK — pelajari kembali nomor yang salah.';}
+  else{cls='low';msg='☄️ JANGAN MENYERAH! Baca ulang teori lalu perbaiki jawabanmu.';}
+  const b=$('#lkpdResult');
+  b.className='result-banner show '+cls;
+  b.innerHTML='<div class="big">'+score+'/100</div><p>'+msg+'</p>'+
+    '<p style="font-family:Nunito,sans-serif;font-size:13px;margin-top:6px">Soal PG &amp; isian dinilai otomatis • Kunci uraian telah muncul — bandingkan dengan jawabanmu, penilaian akhir oleh guru.</p>';
+  b.scrollIntoView({behavior:'smooth',block:'center'});
+  sfx.ok();
+  toast('📋 Jawaban diperiksa! Skor sementara: '+score+'/100');
+}
+function resetLKPD(){
+  $$('#lkpd input[type="radio"]').forEach(r=>{r.checked=false;});
+  $$('#lkpd .opt').forEach(l=>l.classList.remove('correct','wrong'));
+  ['k1score','k1misi','k2kas','k2aset','k2utang','k2ek','k3a','k3b','k3c','idNama','idKelas','idAbsen','idTanggal'].forEach(id=>{
+    const el=$('#'+id); if(el)el.value='';
+  });
+  $$('#lkpd .q-item').forEach(q=>q.classList.remove('n-ok','n-bad'));
+  $$('#lkpd .key').forEach(k=>k.classList.remove('show'));
+  const b=$('#lkpdResult');
+  b.className='result-banner';
+  b.innerHTML='';
+  toast('🗑️ LKPD dikosongkan.');
+}
+$('#btnCheck').addEventListener('click',checkLKPD);
+$('#btnResetLkpd').addEventListener('click',()=>{sfx.click();resetLKPD();});
+$('#btnPrint').addEventListener('click',()=>{sfx.click();window.print();});
+
+/* ============================================================
+   INISIALISASI
+============================================================ */
+buildMC();
+layoutTargets();
+renderMission();
+updHud();
+updRange();
+renderSim();
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
