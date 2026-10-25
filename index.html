@@ -231,8 +231,38 @@ footer b{color:var(--yellow)}
   .kicker,.q-tag{color:#a80!important}
 }
 </style>
+/* --- CSS SPLASH SCREEN --- */
+#splash-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    background-color: #050a1c; display: flex; justify-content: center;
+    align-items: center; z-index: 99999; transition: opacity 0.8s ease, visibility 0.8s;
+    font-family: var(--font-body); color: var(--ink);
+}
+.splash-content { text-align: center; }
+.rocket-animation { font-size: 80px; animation: float 2s ease-in-out infinite; margin-bottom: 20px; }
+@keyframes float {
+    0% { transform: translateY(0px) rotate(-45deg); }
+    50% { transform: translateY(-20px) rotate(-45deg); }
+    100% { transform: translateY(0px) rotate(-45deg); }
+}
+.splash-content h1 { font-size: 24px; font-family: var(--font-head); letter-spacing: 2px; margin: 10px 0; color: var(--yellow); }
+.splash-content p { font-size: 14px; color: var(--muted); }
+.loading-bar { width: 250px; height: 6px; background-color: var(--panel); border-radius: 3px; margin: 20px auto 0; overflow: hidden; }
+.progress { width: 0%; height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan)); animation: load 3s forwards ease-in-out; }
+@keyframes load { to { width: 100%; } }
+.splash-hidden { opacity: 0; visibility: hidden; }
+/* ------------------------- */
 </head>
 <body>
+<!-- Splash Screen Antariksa -->
+<div id="splash-screen">
+    <div class="splash-content">
+        <div class="rocket-animation">🚀</div>
+        <h1>MEMULAI MISI ANTARIKSA...</h1>
+        <p>Lab Maya Persamaan Akuntansi SMK Kelas X</p>
+        <div class="loading-bar"><div class="progress"></div></div>
+    </div>
+</div>
 <canvas id="starfield" aria-hidden="true"></canvas>
 
 <header class="nav no-print">
@@ -1292,6 +1322,14 @@ updRange();
 renderSim();
 requestAnimationFrame(loop);
 })();
+</script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if(splash) splash.classList.add('splash-hidden');
+    }, 3500); // Layar splash akan hilang otomatis setelah 3,5 detik
+});
 </script>
 </body>
 </html>
