@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lab Maya: Jurnal Usaha Tani</title>
+<style>
+:root{--bg:#f6f3e8;--fg:#1f2a1f;--card:#fffdf5;--ac:#2f7d4a;--bd:#d8d2bd;--bad:#b3392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16201a;--fg:#eef2e6;--card:#223028;--ac:#6fcf8f;--bd:#3a4b40;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16201a;--fg:#eef2e6;--card:#223028;--ac:#6fcf8f;--bd:#3a4b40;--bad:#ff8a7a;color-scheme:dark}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column}
+#scene{position:relative;flex:0 0 34%;min-height:170px;overflow:hidden}
+#scene svg{position:absolute;inset:0;width:100%;height:100%}
+.sky-r{fill:#7c8fa0}.sky-s{fill:#8fd3ff}
+body.rain .sun-only,body.sun .rain-only{display:none}
+.drop{stroke:#dbe9f5;stroke-width:2;animation:fall .7s linear infinite}
+@keyframes fall{from{transform:translateY(-40px)}to{transform:translateY(260px)}}
+.sf{animation:sway 3s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom}
+@keyframes sway{50%{transform:rotate(4deg)}}
+#bar{position:absolute;top:8px;right:8px;display:flex;gap:6px;z-index:3}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:10px;padding:8px 12px}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:600}
+#mentor{position:absolute;left:10px;bottom:8px;right:10px;display:flex;gap:10px;align-items:flex-end;z-index:2}
+#face{font-size:44px;background:var(--card);border-radius:50%;width:64px;height:64px;display:grid;place-items:center;border:2px solid var(--ac);flex:none}
+#say{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 14px;font-size:15px;max-width:640px}
+main{flex:1;overflow:auto;padding:12px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-content:start}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px}
+h2{margin:0 0 8px;font-size:16px}
+.nota{border:2px dashed var(--bd);padding:10px;border-radius:8px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
+.amt{font-size:22px;font-weight:700;color:var(--ac)}
+select{font:inherit;width:100%;padding:8px;margin:4px 0 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--fg)}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:5px 4px;border-bottom:1px solid var(--bd);text-align:left}
+.r{text-align:right}.ok{color:var(--ac)}.no{color:var(--bad)}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.prog{height:8px;background:var(--bd);border-radius:6px;overflow:hidden}.prog i{display:block;height:100%;background:var(--ac);width:0;transition:width .4s}
+</style></head><body class="rain">
+<div id="scene">
+<svg viewBox="0 0 800 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<rect width="800" height="260" class="rain-only sky-r"/><rect width="800" height="260" class="sun-only sky-s"/>
+<circle class="sun-only" cx="680" cy="60" r="34" fill="#ffd34d"/>
+<path d="M0 130 Q200 80 400 125 T800 110 V260 H0Z" fill="#5d8f58"/>
+<g fill="none" stroke="#3f7a43" stroke-width="3" class="rain-only">
+<path d="M0 170H800M0 195H800M0 220H800M0 245H800" stroke="#4aa0b8" stroke-width="10" opacity=".55"/>
+<path d="M60 165v-14M110 165v-14M170 190v-16M240 190v-16M320 215v-18M410 215v-18M520 240v-18M640 240v-18" stroke-linecap="round"/>
+<g stroke-width="2">
+<line class="drop" x1="40" y1="0" x2="34" y2="18"/><line class="drop" x1="130" y1="0" x2="124" y2="18" style="animation-delay:.2s"/>
+<line class="drop" x1="220" y1="0" x2="214" y2="18" style="animation-delay:.4s"/><line class="drop" x1="310" y1="0" x2="304" y2="18" style="animation-delay:.1s"/>
+<line class="drop" x1="400" y1="0" x2="394" y2="18" style="animation-delay:.5s"/><line class="drop" x1="490" y1="0" x2="484" y2="18" style="animation-delay:.3s"/>
+<line class="drop" x1="580" y1="0" x2="574" y2="18" style="animation-delay:.6s"/><line class="drop" x1="670" y1="0" x2="664" y2="18" style="animation-delay:.15s"/>
+<line class="drop" x1="760" y1="0" x2="754" y2="18" style="animation-delay:.45s"/></g></g>
+<g class="sun-only"><rect y="150" width="800" height="110" fill="#6aa04d"/>
+<g id="sfs"></g></g>
+</svg>
+<div id="bar"><button id="snd" aria-label="Suara">🔊</button><button id="fs" aria-label="Layar penuh">⛶</button></div>
+<div id="mentor"><div id="face">👨‍🌾</div><div id="say"></div></div>
+</div>
+<main>
+<section class="c" id="work"></section>
+<section class="c"><h2>📒 Jurnal Umum</h2><table><thead><tr><th>#</th><th>Debit</th><th>Kredit</th><th class="r">Rp</th></tr></thead><tbody id="jr"></tbody></table>
+<p>Saldo kas: <b id="kas">Rp0</b></p><div class="prog"><i id="pg"></i></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id), rp=n=>"Rp"+n.toLocaleString("id-ID");
+const A=["Kas","Perlengkapan Benih","Persediaan Pupuk","Utang Usaha","Modal Pak Budi","Pendapatan Panen"];
+const T=[
+{s:"rain",doc:"SLIP SETORAN MODAL<br>Penyetor: Pak Budi<br>Tunai",n:10000000,d:0,k:4,say:"Selamat datang di lab! Hujan turun, saatnya menanam. Pak Budi menyetor modal tunai untuk memulai usaha."},
+{s:"rain",doc:"NOTA TOKO TANI MAKMUR<br>Benih padi unggul<br>Dibayar tunai",n:1500000,d:1,k:0,say:"Benih sudah dibeli dan dibayar langsung. Akun apa yang bertambah, dan apa yang berkurang?"},
+{s:"rain",doc:"FAKTUR PUPUK SUBUR<br>Pupuk organik<br>Belum dibayar (tempo 30 hari)",n:2000000,d:2,k:3,say:"Pupuk diambil dulu, bayarnya nanti. Ingat, utang itu kewajiban yang bertambah."},
+{s:"sun",doc:"KWITANSI PENJUALAN<br>Panen padi ke KUD<br>Diterima tunai",n:6000000,d:0,k:5,say:"Panen tiba dan kebun matahari ikut mekar! Hasil penjualan masuk sebagai pendapatan."},
+{s:"sun",doc:"BUKTI KAS KELUAR<br>Pelunasan faktur pupuk",n:2000000,d:3,k:0,say:"Terakhir, utang pupuk dilunasi. Utang berkurang, artinya dicatat di sisi debit."}];
+const Q=[{q:"Pembelian pupuk secara kredit menambah…",o:["Kas","Utang Usaha","Pendapatan"],a:1},
+{q:"Akun yang bertambah di sisi debit adalah…",o:["Aset","Modal","Pendapatan"],a:0},
+{q:"Pelunasan utang usaha dicatat…",o:["Debit Utang, Kredit Kas","Debit Kas, Kredit Utang","Debit Modal, Kredit Kas"],a:0}];
+let i=0,kas=0,score=0,on=true,ctx,rain;
+const say=t=>$("say").textContent=t;
+// suara
+function au(){if(!ctx){try{ctx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}return ctx}
+function tone(f,d,ty="sine",v=.15,t0=0){if(!on||!au())return;const o=ctx.createOscillator(),g=ctx.createGain();o.type=ty;o.frequency.value=f;const t=ctx.currentTime+t0;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(ctx.destination);o.start(t);o.stop(t+d)}
+const good=()=>{tone(660,.15,"sine",.15,0);tone(880,.25,"sine",.15,.12)};
+const bad=()=>tone(160,.35,"sawtooth",.1);
+function rainOn(x){if(!au())return;if(rain){try{rain.stop()}catch(e){}rain=null}if(!x||!on)return;
+const b=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),d=b.getChannelData(0);for(let k=0;k<d.length;k++)d[k]=Math.random()*2-1;
+const s=ctx.createBufferSource();s.buffer=b;s.loop=true;const f=ctx.createBiquadFilter();f.type="lowpass";f.frequency.value=1400;const g=ctx.createGain();g.gain.value=.05;s.connect(f).connect(g).connect(ctx.destination);s.start();rain=s}
+$("snd").onclick=()=>{on=!on;$("snd").textContent=on?"🔊":"🔇";rainOn(on&&document.body.classList.contains("rain"))};
+$("fs").onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}};
+// bunga matahari
+$("sfs").innerHTML=[40,130,230,330,440,540,640,740].map((x,n)=>{const y=175+(n%3)*28;return `<g class="sf" style="animation-delay:${n*.3}s"><line x1="${x}" y1="${y}" x2="${x}" y2="${y+40}" stroke="#2e7d32" stroke-width="4"/><circle cx="${x}" cy="${y}" r="17" fill="#ffc107"/><circle cx="${x}" cy="${y}" r="8" fill="#6d4c1f"/></g>`}).join("");
+function opts(){return A.map((a,n)=>`<option value="${n}">${a}</option>`).join("")}
+function step(){const t=T[i];document.body.className=t.s;rainOn(t.s=="rain");say(t.say);$("pg").style.width=i/5*100+"%";
+$("work").innerHTML=`<h2>🧾 Transaksi ${i+1} dari 5</h2><div class="nota">${t.doc}<div class="amt">${rp(t.n)}</div></div>
+<p style="margin:10px 0 0">Akun yang di-<b>debit</b></p><select id="sd">${opts()}</select>
+<p style="margin:0">Akun yang di-<b>kredit</b></p><select id="sk">${opts()}</select>
+<button class="p" id="go">Periksa jurnal</button> <span id="fb"></span>`;
+$("go").onclick=check}
+function check(){const t=T[i],d=+$("sd").value,k=+$("sk").value;
+if(d==t.d&&k==t.k){good();kas+=(d==0?t.n:0)-(k==0?t.n:0);$("kas").textContent=rp(kas);
+$("jr").insertAdjacentHTML("beforeend",`<tr><td>${i+1}</td><td>${A[d]}</td><td>${A[k]}</td><td class="r">${t.n.toLocaleString("id-ID")}</td></tr>`);
+$("fb").innerHTML='<b class="ok">Benar!</b>';$("go").disabled=true;say("Tepat sekali! Debit "+A[d]+", kredit "+A[k]+".");
+const nx=document.createElement("button");nx.className="p";nx.textContent=i<4?"Lanjut →":"Mulai kuis →";nx.onclick=()=>{i++;i<5?step():quiz(0)};$("work").appendChild(nx)}
+else{bad();$("fb").innerHTML='<b class="no">Belum tepat.</b>';say("Hmm, coba lagi. Petunjuk: "+(d==t.d?"sisi kredit":k==t.k?"sisi debit":"cek kedua sisi")+" masih keliru. Aset bertambah di debit, kewajiban dan modal bertambah di kredit.")}}
+function quiz(n){document.body.className="sun";rainOn(false);$("pg").style.width="100%";
+if(n>=Q.length){const ok=score==Q.length;say(ok?"Luar biasa, sempurna!":"Bagus! Ulangi lagi untuk nilai sempurna.");$("work").innerHTML=`<h2>🏆 Selesai</h2><p>Skor kuis: <b>${score}/${Q.length}</b></p><p>Saldo kas akhir: <b>${rp(kas)}</b> (10.000.000 − 1.500.000 + 6.000.000 − 2.000.000).</p><button class="p" onclick="location.reload()">Ulangi lab</button>`;if(ok){[523,659,784,1047].forEach((f,k)=>tone(f,.25,"triangle",.15,k*.12))}return}
+const q=Q[n];say("Kuis "+(n+1)+" dari "+Q.length+". Pilih jawaban yang paling tepat.");
+$("work").innerHTML=`<h2>❓ ${q.q}</h2>`+q.o.map((o,k)=>`<button class="opt" data-k="${k}">${o}</button>`).join("");
+$("work").querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const r=+b.dataset.k==q.a;r?(score++,good()):bad();say(r?"Benar!":"Kurang tepat. Jawabannya: "+q.o[q.a]);
+$("work").querySelectorAll(".opt").forEach(x=>x.disabled=true);const nx=document.createElement("button");nx.className="p";nx.textContent="Lanjut →";nx.onclick=()=>quiz(n+1);$("work").appendChild(nx)})}
+$("work").innerHTML='<h2>🌾 Lab Maya Jurnal Usaha Tani</h2><p>Bantu Pak Budi mencatat lima transaksi usaha taninya ke dalam jurnal, lalu jawab kuis singkat.</p><button class="p" id="st">Mulai</button>';
+say("Halo, saya Pak Budi, mentormu. Tekan Mulai, ya.");
+$("st").onclick=()=>{au()&&ctx.resume();step()};
+</script></body></html>
